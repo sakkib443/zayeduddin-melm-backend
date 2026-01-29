@@ -101,7 +101,7 @@ app.get('/', (req: Request, res: Response) => {
   console.log('Health check called - Backend is active');
   res.status(200).json({
     success: true,
-    message: '🚀 Hi Ict Park LMS API Server is running!',
+    message: '🚀 Zayed Uddin API Server is running!',
     version: '1.0.0',
     environment: config.env,
     timestamp: new Date().toISOString(),

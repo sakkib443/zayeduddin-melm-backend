@@ -102,7 +102,7 @@ if (process.env.NODE_ENV !== 'production') {
     console.log('');
     console.log('╔══════════════════════════════════════════════╗');
     console.log('║                                              ║');
-    console.log('║   🎓 Hi Ict Park LMS Server Started!        ║');
+    console.log('║   🎓 Zayed Uddin Server Started!            ║');
     console.log('║                                              ║');
     console.log(`║   🌐 URL: http://localhost:${config.port}               ║`);
     console.log(`║   🔧 Environment: ${config.env.padEnd(21)}   ║`);

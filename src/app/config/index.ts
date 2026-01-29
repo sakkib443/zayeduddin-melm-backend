@@ -1,5 +1,5 @@
 // ===================================================================
-// Hi Ict Park Backend - Configuration File
+// Zayed Uddin Backend - Configuration File
 // কনফিগারেশন ফাইল - সব environment variables এখানে manage হবে
 // ===================================================================
 
@@ -18,7 +18,7 @@ export default {
 
   // ==================== Database Configuration ====================
   // ডাটাবেস কনফিগারেশন (MongoDB)
-  database_url: process.env.DATABASE_URL || 'mongodb://localhost:27017/hiictpark',
+  database_url: process.env.DATABASE_URL || 'mongodb://localhost:27017/zayeduddin',
 
   // ==================== JWT Configuration ====================
   // JWT টোকেন কনফিগারেশন (Authentication)
@@ -48,7 +48,7 @@ export default {
     port: Number(process.env.EMAIL_PORT) || 587,
     user: process.env.EMAIL_USER || '',
     pass: process.env.EMAIL_PASS || '',
-    from: process.env.EMAIL_FROM || 'noreply@hiictpark.com',
+    from: process.env.EMAIL_FROM || 'noreply@zayeduddin.com',
   },
 
   // ==================== Frontend URL ====================
