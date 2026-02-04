@@ -11,7 +11,8 @@ export const DesignTemplateController = {
 
     // ==================== CREATE (Seller/Admin) ====================
     createDesignTemplate: catchAsync(async (req: Request, res: Response) => {
-        const template = await DesignTemplateService.createDesignTemplate(req.body, req.user!.userId);
+        const template = await DesignTemplateService.createDesignTemplate(req.body);
+
 
         sendResponse(res, {
             statusCode: 201,

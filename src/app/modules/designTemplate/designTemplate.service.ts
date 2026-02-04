@@ -15,7 +15,7 @@ interface IPaginatedResult<T> {
 export const DesignTemplateService = {
 
     // ==================== CREATE DESIGN TEMPLATE ====================
-    async createDesignTemplate(payload: Partial<IDesignTemplate>, authorId: string): Promise<IDesignTemplate> {
+    async createDesignTemplate(payload: Partial<IDesignTemplate>): Promise<IDesignTemplate> {
         // Generate slug if not provided
         if (!payload.slug) {
             payload.slug = payload.title!
@@ -34,7 +34,6 @@ export const DesignTemplateService = {
         // Create template
         const template = await DesignTemplate.create({
             ...payload,
-            author: authorId,
             publishDate: new Date(),
         });
 
@@ -45,6 +44,7 @@ export const DesignTemplateService = {
 
         return template;
     },
+
 
     // ==================== GET ALL DESIGN TEMPLATES (Public with filters) ====================
     async getAllDesignTemplates(
@@ -111,7 +111,6 @@ export const DesignTemplateService = {
 
         const [templates, total] = await Promise.all([
             DesignTemplate.find(whereConditions)
-                .populate('author', 'firstName lastName avatar')
                 .populate('category', 'name slug')
                 .sort(sortConditions)
                 .skip(skip)
@@ -137,7 +136,6 @@ export const DesignTemplateService = {
             isDeleted: false,
             isFeatured: true,
         })
-            .populate('author', 'firstName lastName')
             .populate('category', 'name slug')
             .sort({ salesCount: -1 })
             .limit(limit);
@@ -146,7 +144,6 @@ export const DesignTemplateService = {
     // ==================== GET SINGLE DESIGN TEMPLATE ====================
     async getDesignTemplateById(id: string): Promise<IDesignTemplate> {
         const template = await DesignTemplate.findById(id)
-            .populate('author', 'firstName lastName avatar')
             .populate('category', 'name slug');
 
         if (!template) {
@@ -159,7 +156,6 @@ export const DesignTemplateService = {
     // ==================== GET BY SLUG (Public) ====================
     async getDesignTemplateBySlug(slug: string): Promise<IDesignTemplate> {
         const template = await DesignTemplate.findOne({ slug, status: 'approved', isDeleted: false })
-            .populate('author', 'firstName lastName avatar')
             .populate('category', 'name slug');
 
         if (!template) {
@@ -183,7 +179,6 @@ export const DesignTemplateService = {
         payload.lastUpdate = new Date();
 
         const updated = await DesignTemplate.findByIdAndUpdate(id, { $set: payload }, { new: true, runValidators: true })
-            .populate('author', 'firstName lastName')
             .populate('category', 'name');
 
         return updated!;
@@ -322,7 +317,6 @@ export const DesignTemplateService = {
 
         const [templates, total] = await Promise.all([
             DesignTemplate.find(whereConditions)
-                .populate('author', 'firstName lastName email')
                 .populate('category', 'name')
                 .sort(sortConditions)
                 .skip(skip)

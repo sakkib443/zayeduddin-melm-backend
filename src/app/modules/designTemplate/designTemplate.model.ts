@@ -19,7 +19,6 @@ const designTemplateSchema = new Schema<IDesignTemplate>(
         author: {
             type: Schema.Types.ObjectId,
             ref: 'User',
-            required: [true, 'Author is required'],
         },
         platform: {
             type: String,
