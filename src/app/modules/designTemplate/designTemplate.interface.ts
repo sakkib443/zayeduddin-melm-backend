@@ -1,29 +1,29 @@
 import { Types } from 'mongoose';
 
+
 /**
- * Platform Options for Design Templates
+ * Design Tools Options (Multi-selection)
  */
-export const DESIGN_PLATFORM_OPTIONS = [
+export const DESIGN_TOOLS_OPTIONS = [
     'Figma',
-    'Photoshop',
-    'Illustrator',
+    'Adobe Photoshop',
+    'Adobe Illustrator',
     'Adobe XD',
     'Sketch',
     'Canva',
-    'HTML/CSS',
-    'React',
-    'Next.js',
-    'Tailwind CSS',
-    'WordPress',
-    'Elementor',
-    'Bootstrap',
-    'InDesign',
+    'Adobe InDesign',
+    'CorelDRAW',
+    'Affinity Designer',
+    'GIMP',
+    'Procreate',
+    'Blender',
+    'Cinema 4D',
     'After Effects',
     'Premiere Pro',
     'Other'
 ] as const;
 
-export type TDesignPlatform = typeof DESIGN_PLATFORM_OPTIONS[number];
+export type TDesignTool = typeof DESIGN_TOOLS_OPTIONS[number];
 
 /**
  * Design Template Type Options
@@ -60,46 +60,40 @@ export interface IDesignTemplate {
     title: string;
     slug: string;
     author: Types.ObjectId;          // User (seller) reference
-    platform: TDesignPlatform;       // Platform enum
-    category: Types.ObjectId;        // Category reference
+    category?: Types.ObjectId;        // Category reference
+    designTools?: TDesignTool[];      // Design tools used (multi-selection)
 
     // Type & Access
-    templateType: TDesignType;       // Design type enum
-    accessType: 'free' | 'paid';
+    templateType?: TDesignType;       // Design type enum
+    accessType?: 'free' | 'paid';
 
     // Pricing
-    price: number;
+    price?: number;
     offerPrice?: number;
 
     // Licensing
-    licenseType: 'regular' | 'extended';
-    regularLicensePrice: number;
+    licenseType?: 'regular' | 'extended';
+    regularLicensePrice?: number;
     extendedLicensePrice?: number;
 
     // Ratings & Sales
-    rating: number;                  // Average rating (1-5)
-    reviewCount: number;
-    salesCount: number;
+    rating?: number;                  // Average rating (1-5)
+    reviewCount?: number;
+    salesCount?: number;
 
     // Analytics & Engagement
-    viewCount: number;               // Page view count
-    likeCount: number;               // Total likes
-    likedBy: Types.ObjectId[];       // Users who liked this template
+    viewCount?: number;               // Page view count
+    likeCount?: number;               // Total likes
+    likedBy?: Types.ObjectId[];       // Users who liked this template
 
     // Details
-    version: string;                 // e.g., "1.0.0"
-    features: string[];              // Feature list
-    filesIncluded: string[];         // Files included (e.g., .fig, .psd, .html)
-    description: string;             // Short description
+    description?: string;             // Short description
     longDescription?: string;        // Full description (markdown)
 
-    // Compatibility
-    compatibility?: string[];        // Compatibility info
-
     // Media
-    images: string[];                // Screenshot URLs
+    images?: string[];                // Screenshot URLs
     previewUrl?: string;             // Live demo/preview URL
-    downloadFile: string;            // Secure file path/URL
+    downloadFile?: string;            // Secure file path/URL
     documentationUrl?: string;       // Documentation link
 
     // Status
@@ -120,7 +114,7 @@ export interface IDesignTemplate {
 export interface IDesignTemplateFilters {
     searchTerm?: string;
     category?: string;
-    platform?: TDesignPlatform;
+    designTools?: TDesignTool[];
     author?: string;
     accessType?: 'free' | 'paid';
     status?: string;

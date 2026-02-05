@@ -51,7 +51,7 @@ export const DesignTemplateService = {
         filters: IDesignTemplateFilters,
         query: IDesignTemplateQuery
     ): Promise<IPaginatedResult<IDesignTemplate>> {
-        const { searchTerm, category, platform, accessType, templateType, minPrice, maxPrice, minRating } = filters;
+        const { searchTerm, category, designTools, accessType, templateType, minPrice, maxPrice, minRating } = filters;
         const {
             page = config.pagination.default_page,
             limit = config.pagination.default_limit,
@@ -71,7 +71,7 @@ export const DesignTemplateService = {
                 $or: [
                     { title: { $regex: searchTerm, $options: 'i' } },
                     { description: { $regex: searchTerm, $options: 'i' } },
-                    { features: { $regex: searchTerm, $options: 'i' } },
+                    { designTools: { $regex: searchTerm, $options: 'i' } },
                 ],
             });
         }
@@ -79,8 +79,8 @@ export const DesignTemplateService = {
         if (category) {
             conditions.push({ category: new Types.ObjectId(category) });
         }
-        if (platform) {
-            conditions.push({ platform: platform });
+        if (designTools) {
+            conditions.push({ designTools: { $in: Array.isArray(designTools) ? designTools : [designTools] } });
         }
         if (templateType) {
             conditions.push({ templateType: templateType });
@@ -289,7 +289,7 @@ export const DesignTemplateService = {
 
     // ==================== GET ADMIN DESIGN TEMPLATES ====================
     async getAdminDesignTemplates(filters: IDesignTemplateFilters, query: IDesignTemplateQuery): Promise<IPaginatedResult<IDesignTemplate>> {
-        const { searchTerm, status, category, platform, templateType } = filters;
+        const { searchTerm, status, category, designTools, templateType } = filters;
         const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'desc' } = query;
 
         const conditions: FilterQuery<IDesignTemplate>[] = [{ isDeleted: false }];
@@ -303,8 +303,8 @@ export const DesignTemplateService = {
         if (category) {
             conditions.push({ category: new Types.ObjectId(category) });
         }
-        if (platform) {
-            conditions.push({ platform: platform });
+        if (designTools) {
+            conditions.push({ designTools: { $in: Array.isArray(designTools) ? designTools : [designTools] } });
         }
         if (templateType) {
             conditions.push({ templateType: templateType });

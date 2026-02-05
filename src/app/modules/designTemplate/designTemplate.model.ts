@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { IDesignTemplate, DESIGN_PLATFORM_OPTIONS, DESIGN_TYPE_OPTIONS } from './designTemplate.interface';
+import { IDesignTemplate, DESIGN_TOOLS_OPTIONS, DESIGN_TYPE_OPTIONS } from './designTemplate.interface';
 
 const designTemplateSchema = new Schema<IDesignTemplate>(
     {
@@ -20,22 +20,19 @@ const designTemplateSchema = new Schema<IDesignTemplate>(
             type: Schema.Types.ObjectId,
             ref: 'User',
         },
-        platform: {
-            type: String,
-            enum: DESIGN_PLATFORM_OPTIONS,
-            required: [true, 'Platform is required'],
-        },
         category: {
             type: Schema.Types.ObjectId,
             ref: 'Category',
-            required: [true, 'Category is required'],
         },
+        designTools: [{
+            type: String,
+            enum: DESIGN_TOOLS_OPTIONS,
+        }],
 
         // ==================== Type & Access ====================
         templateType: {
             type: String,
             enum: DESIGN_TYPE_OPTIONS,
-            required: [true, 'Template type is required'],
         },
         accessType: {
             type: String,
@@ -46,7 +43,6 @@ const designTemplateSchema = new Schema<IDesignTemplate>(
         // ==================== Pricing ====================
         price: {
             type: Number,
-            required: [true, 'Price is required'],
             min: [0, 'Price cannot be negative'],
         },
         offerPrice: {
@@ -62,7 +58,6 @@ const designTemplateSchema = new Schema<IDesignTemplate>(
         },
         regularLicensePrice: {
             type: Number,
-            required: [true, 'Regular license price is required'],
             min: [0, 'Price cannot be negative'],
         },
         extendedLicensePrice: {
@@ -86,28 +81,17 @@ const designTemplateSchema = new Schema<IDesignTemplate>(
         likedBy: [{ type: Schema.Types.ObjectId, ref: 'User' }],
 
         // ==================== Details ====================
-        version: {
-            type: String,
-            default: '1.0.0',
-        },
-        features: [{ type: String }],
-        filesIncluded: [{ type: String }],
         description: {
             type: String,
-            required: [true, 'Description is required'],
             maxlength: [1000, 'Description cannot exceed 1000 characters'],
         },
         longDescription: { type: String },
-
-        // ==================== Compatibility ====================
-        compatibility: [{ type: String }],
 
         // ==================== Media ====================
         images: [{ type: String }],
         previewUrl: { type: String },
         downloadFile: {
             type: String,
-            required: [true, 'Download file is required'],
         },
         documentationUrl: { type: String },
 
@@ -134,7 +118,7 @@ const designTemplateSchema = new Schema<IDesignTemplate>(
 designTemplateSchema.index({ slug: 1 });
 designTemplateSchema.index({ author: 1 });
 designTemplateSchema.index({ category: 1 });
-designTemplateSchema.index({ platform: 1 });
+designTemplateSchema.index({ designTools: 1 });
 designTemplateSchema.index({ status: 1, isDeleted: 1 });
 designTemplateSchema.index({ price: 1 });
 designTemplateSchema.index({ rating: -1 });

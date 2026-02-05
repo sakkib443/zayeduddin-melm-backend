@@ -25,7 +25,7 @@ export const DesignTemplateController = {
     // ==================== GET ALL (Public) ====================
     getAllDesignTemplates: catchAsync(async (req: Request, res: Response) => {
         const filters = pick(req.query, [
-            'searchTerm', 'category', 'platform', 'accessType', 'templateType', 'minPrice', 'maxPrice', 'minRating',
+            'searchTerm', 'category', 'designTools', 'accessType', 'templateType', 'minPrice', 'maxPrice', 'minRating',
         ]) as IDesignTemplateFilters;
 
         // Convert string to number
@@ -131,7 +131,7 @@ export const DesignTemplateController = {
 
     // ==================== ADMIN: GET ALL ====================
     getAdminDesignTemplates: catchAsync(async (req: Request, res: Response) => {
-        const filters = pick(req.query, ['searchTerm', 'status', 'category', 'platform', 'templateType']) as IDesignTemplateFilters;
+        const filters = pick(req.query, ['searchTerm', 'status', 'category', 'designTools', 'templateType']) as IDesignTemplateFilters;
         const query: IDesignTemplateQuery = {
             page: req.query.page ? Number(req.query.page) : 1,
             limit: req.query.limit ? Number(req.query.limit) : 10,
