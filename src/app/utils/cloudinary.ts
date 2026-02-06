@@ -120,6 +120,34 @@ export const uploadSingleImage = multer({
     fileFilter: imageFileFilter,
 }).single('image');
 
+// Design Template images upload (multiple images allowed)
+export const uploadDesignTemplateImages = multer({
+    storage: createStorage('design-templates'),
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit per image
+    fileFilter: imageFileFilter,
+}).array('images', 10); // Max 10 images
+
+// Design Template download file upload (ZIP, RAR)
+export const uploadDesignTemplateFile = multer({
+    storage: createRawStorage('design-template-files'),
+    limits: { fileSize: 100 * 1024 * 1024 }, // 100MB limit for template files
+    fileFilter: (req, file, cb) => {
+        const allowedMimes = [
+            'application/zip',
+            'application/x-zip-compressed',
+            'application/x-rar-compressed',
+            'application/x-7z-compressed',
+            'application/gzip',
+            'application/x-tar'
+        ];
+        if (allowedMimes.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error('Only ZIP, RAR, 7z, TAR, GZ files are allowed'));
+        }
+    }
+}).single('downloadFile');
+
 // ==================== Raw File Upload (ZIP, RAR) ====================
 
 // Download file upload (ZIP, RAR for website templates)

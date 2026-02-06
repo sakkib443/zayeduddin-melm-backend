@@ -4,6 +4,7 @@ import { DesignTemplateController } from './designTemplate.controller';
 import validateRequest from '../../middlewares/validateRequest';
 import { authMiddleware, authorizeRoles, optionalAuth } from '../../middlewares/auth';
 import { createDesignTemplateValidation, updateDesignTemplateValidation, designTemplateQueryValidation } from './designTemplate.validation';
+import { uploadDesignTemplateImages, uploadDesignTemplateFile } from '../../utils/cloudinary';
 
 const router = express.Router();
 
@@ -19,6 +20,24 @@ router.get('/featured', DesignTemplateController.getFeaturedDesignTemplates);
 router.get('/slug/:slug', optionalAuth, DesignTemplateController.getDesignTemplateBySlug);
 
 // ==================== ADMIN/MENTOR ROUTES ====================
+
+// POST /api/design-templates/admin/upload-images - Upload images to Cloudinary
+router.post(
+    '/admin/upload-images',
+    authMiddleware,
+    authorizeRoles('admin', 'mentor'),
+    uploadDesignTemplateImages,
+    DesignTemplateController.uploadImages
+);
+
+// POST /api/design-templates/admin/upload-file - Upload download file to Cloudinary
+router.post(
+    '/admin/upload-file',
+    authMiddleware,
+    authorizeRoles('admin', 'mentor'),
+    uploadDesignTemplateFile,
+    DesignTemplateController.uploadDownloadFile
+);
 
 // POST /api/design-templates/admin - Create new template
 router.post(

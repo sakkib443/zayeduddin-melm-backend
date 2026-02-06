@@ -9,6 +9,44 @@ import AppError from '../../utils/AppError';
 
 export const DesignTemplateController = {
 
+    // ==================== UPLOAD IMAGES ====================
+    uploadImages: catchAsync(async (req: Request, res: Response) => {
+        const files = req.files as Express.Multer.File[];
+
+        if (!files || files.length === 0) {
+            throw new AppError(400, 'No images uploaded');
+        }
+
+        // Extract URLs from Cloudinary upload
+        const imageUrls = files.map(file => (file as any).path || (file as any).secure_url);
+
+        sendResponse(res, {
+            statusCode: 200,
+            success: true,
+            message: `${files.length} image(s) uploaded successfully`,
+            data: { urls: imageUrls },
+        });
+    }),
+
+    // ==================== UPLOAD DOWNLOAD FILE ====================
+    uploadDownloadFile: catchAsync(async (req: Request, res: Response) => {
+        const file = req.file as Express.Multer.File;
+
+        if (!file) {
+            throw new AppError(400, 'No file uploaded');
+        }
+
+        // Extract URL from Cloudinary upload
+        const fileUrl = (file as any).path || (file as any).secure_url;
+
+        sendResponse(res, {
+            statusCode: 200,
+            success: true,
+            message: 'Download file uploaded successfully',
+            data: { url: fileUrl },
+        });
+    }),
+
     // ==================== CREATE (Seller/Admin) ====================
     createDesignTemplate: catchAsync(async (req: Request, res: Response) => {
         const template = await DesignTemplateService.createDesignTemplate(req.body);
