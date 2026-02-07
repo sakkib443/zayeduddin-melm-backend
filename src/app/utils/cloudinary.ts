@@ -50,10 +50,12 @@ const createRawStorage = (folder: string) => {
     return new CloudinaryStorage({
         cloudinary: cloudinary,
         params: async (req, file) => {
+            // Get original extension
+            const ext = file.originalname.split('.').pop();
             return {
                 folder: `hiictpark/${folder}`,
                 resource_type: 'raw', // Important: raw for non-image files
-                public_id: `${Date.now()}-${file.originalname.split('.')[0]}`,
+                public_id: `${Date.now()}-${file.originalname.split('.')[0]}${ext ? `.${ext}` : ''}`,
             };
         },
     });
