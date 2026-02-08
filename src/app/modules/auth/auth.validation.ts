@@ -21,8 +21,12 @@ export const registerValidation = z.object({
       .string({
         required_error: 'Password is required',
       })
-      .min(6, 'Password must be at least 6 characters')
-      .max(50, 'Password cannot exceed 50 characters'),
+      .min(8, 'Password must be at least 8 characters')
+      .max(50, 'Password cannot exceed 50 characters')
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#]).{8,}$/,
+        'Password must contain at least one uppercase letter, one lowercase letter, one number and one special character (@$!%*?&#)'
+      ),
 
     firstName: z
       .string({
@@ -38,9 +42,21 @@ export const registerValidation = z.object({
       .min(1, 'Last name is required')
       .max(50, 'Last name cannot exceed 50 characters'),
 
-    phone: z.string().optional(),
+    phone: z.string().optional().or(z.literal('')),
+    countryCode: z.string().optional().default('+880'),
 
-    role: z.enum(['student', 'admin']).optional().default('student'),
+    // Address fields (optional)
+    address: z.string().max(200).optional(),
+    city: z.string().max(100).optional(),
+    state: z.string().max(100).optional(),
+    postalCode: z.string().max(20).optional(),
+    country: z.string().max(100).optional(),
+
+    // Profile fields (optional)
+    gender: z.enum(['male', 'female', 'other', '']).optional(),
+    aboutStudent: z.string().max(1000).optional(),
+
+    role: z.enum(['student', 'admin', 'mentor']).optional().default('student'),
   }),
 });
 
@@ -153,3 +169,31 @@ export const updatePasswordValidation = z.object({
 // Export types
 export type TRegisterInput = z.infer<typeof registerValidation>['body'];
 export type TLoginInput = z.infer<typeof loginValidation>['body'];
+
+/**
+ * Verify Email Validation Schema
+ * Email verification token validation
+ */
+export const verifyEmailValidation = z.object({
+  body: z.object({
+    token: z
+      .string({
+        required_error: 'Verification token is required',
+      })
+      .min(1, 'Verification token is required'),
+  }),
+});
+
+/**
+ * Resend Verification Email Validation Schema
+ * Resend verification email validation
+ */
+export const resendVerificationValidation = z.object({
+  body: z.object({
+    email: z
+      .string({
+        required_error: 'Email is required',
+      })
+      .email('Please provide a valid email'),
+  }),
+});

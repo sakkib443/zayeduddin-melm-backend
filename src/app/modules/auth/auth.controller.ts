@@ -181,6 +181,40 @@ const AuthController = {
       message: 'Logged out successfully',
     });
   }),
+
+  // ==================== VERIFY EMAIL ====================
+  /**
+   * POST /api/auth/verify-email
+   * Verify email using token
+   * Email verification করা
+   */
+  verifyEmail: catchAsync(async (req: Request, res: Response) => {
+    const { token } = req.body;
+    await AuthService.verifyEmail(token);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: 'Email verified successfully. Your account is now active.',
+    });
+  }),
+
+  // ==================== RESEND VERIFICATION EMAIL ====================
+  /**
+   * POST /api/auth/resend-verification
+   * Resend verification email
+   * নতুন verification email পাঠানো
+   */
+  resendVerificationEmail: catchAsync(async (req: Request, res: Response) => {
+    const { email } = req.body;
+    await AuthService.resendVerificationEmail(email);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: 'Verification email sent successfully. Please check your inbox.',
+    });
+  }),
 };
 
 export default AuthController;

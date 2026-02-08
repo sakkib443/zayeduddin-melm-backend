@@ -46,6 +46,11 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
       trim: true,
       default: '',
     },
+    countryCode: {
+      type: String,
+      trim: true,
+      default: '+880',
+    },
     avatar: {
       type: String,
       default: '', // Default avatar URL রাখা যায়
@@ -65,6 +70,16 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
     city: {
       type: String,
       maxlength: [100, 'City cannot exceed 100 characters'],
+      default: '',
+    },
+    state: {
+      type: String,
+      maxlength: [100, 'State cannot exceed 100 characters'],
+      default: '',
+    },
+    postalCode: {
+      type: String,
+      maxlength: [20, 'Postal code cannot exceed 20 characters'],
       default: '',
     },
     country: {
@@ -95,6 +110,11 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
         values: ['male', 'female', 'other', ''],
         message: '{VALUE} is not a valid gender',
       },
+      default: '',
+    },
+    aboutStudent: {
+      type: String,
+      maxlength: [1000, 'About cannot exceed 1000 characters'],
       default: '',
     },
     socialLinks: {
@@ -171,6 +191,10 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
     passwordResetToken: String,
     passwordResetExpires: Date,
     passwordChangedAt: Date,
+
+    // ==================== Email Verification ====================
+    emailVerificationToken: String,
+    emailVerificationExpires: Date,
   },
   {
     timestamps: true, // createdAt, updatedAt auto add হবে

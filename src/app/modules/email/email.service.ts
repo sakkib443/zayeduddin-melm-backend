@@ -298,6 +298,59 @@ const EmailService = {
         }
     },
 
+    // Send email verification email
+    async sendEmailVerificationEmail(email: string, firstName: string, verificationToken: string): Promise<boolean> {
+        try {
+            const verificationLink = `${config.frontend_url}/verify-email?token=${verificationToken}`;
+            const emailContent = getEmailWrapper(`
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+                        <span style="font-size: 36px;">✉️</span>
+                    </div>
+                    <h2 style="color: #1e293b; font-size: 24px; margin-bottom: 10px;">Verify Your Email</h2>
+                    <p style="color: #64748b; font-size: 16px;">Almost there! Just one more step</p>
+                </div>
+                
+                <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+                    Hi <strong>${firstName}</strong>,
+                </p>
+                
+                <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-bottom: 25px;">
+                    Thanks for registering! Please verify your email address by clicking the button below:
+                </p>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="${verificationLink}" style="display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                        Verify Email Address
+                    </a>
+                </div>
+                
+                <div style="background: #eff6ff; border-radius: 12px; padding: 20px; margin-bottom: 25px;">
+                    <p style="color: #1e40af; font-size: 14px; margin: 0;">
+                        ⏰ This link will expire in <strong>24 hours</strong>. If you didn't create an account, please ignore this email.
+                    </p>
+                </div>
+                
+                <p style="color: #64748b; font-size: 13px; margin-top: 20px;">
+                    If the button doesn't work, copy and paste this link into your browser:<br>
+                    <a href="${verificationLink}" style="color: #3b82f6; word-break: break-all;">${verificationLink}</a>
+                </p>
+            `);
+
+            await transporter.sendMail({
+                from: `"Zayed Uddin" <${config.email.from}>`,
+                to: email,
+                subject: '✉️ Verify Your Email - Zayed Uddin',
+                html: emailContent,
+            });
+            console.log(`✅ Email verification sent to ${email}`);
+            return true;
+        } catch (error) {
+            console.error('❌ Failed to send email verification:', error);
+            return false;
+        }
+    },
+
     // Verify email configuration
     async verifyConnection(): Promise<boolean> {
         try {

@@ -83,6 +83,13 @@ router.patch(
 
 // ==================== DYNAMIC ID ROUTES ====================
 
+// GET /api/design-templates/:id/download - Download file (authenticated)
+router.get(
+    '/:id/download',
+    authMiddleware,
+    DesignTemplateController.downloadFile
+);
+
 // POST /api/design-templates/:id/like - Toggle like
 router.post(
     '/:id/like',

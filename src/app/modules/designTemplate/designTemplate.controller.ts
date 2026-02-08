@@ -2,6 +2,9 @@ import { Request, Response } from 'express';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { DesignTemplateService } from './designTemplate.service';
+import https from 'https';
+import http from 'http';
+import { v2 as cloudinary } from 'cloudinary';
 
 import pick from '../../utils/pick';
 import { IDesignTemplateFilters, IDesignTemplateQuery } from './designTemplate.interface';
@@ -215,6 +218,72 @@ export const DesignTemplateController = {
             message: result.liked ? 'Design template liked' : 'Design template unliked',
             data: result,
         });
+    }),
+
+    // ==================== DOWNLOAD FILE ====================
+    downloadFile: catchAsync(async (req: Request, res: Response) => {
+        const template = await DesignTemplateService.getDesignTemplateById(req.params.id);
+
+        if (!template.downloadFile) {
+            throw new AppError(404, 'Download file not found');
+        }
+
+        const downloadUrl = template.downloadFile;
+        console.log(`[Download] Processing: ${template.title}`);
+
+        // Extract Cloudinary info
+        const urlParts = downloadUrl.split('/');
+        const uploadIndex = urlParts.indexOf('upload');
+        const authIndex = urlParts.indexOf('authenticated');
+        const baseIndex = uploadIndex !== -1 ? uploadIndex : authIndex;
+
+        if (baseIndex === -1) {
+            return res.status(200).json({ success: true, redirectUrl: downloadUrl });
+        }
+
+        const isImage = downloadUrl.includes('/image/');
+        const resourceType = isImage ? 'image' : 'raw';
+        const deliveryType = urlParts[baseIndex];
+
+        // Extract version and public ID
+        let pathStartIndex = baseIndex + 1;
+        let version: string | undefined = undefined;
+        if (urlParts[baseIndex + 1] && urlParts[baseIndex + 1].startsWith('v')) {
+            version = urlParts[baseIndex + 1].substring(1);
+            pathStartIndex = baseIndex + 2;
+        }
+
+        const publicId = urlParts.slice(pathStartIndex).join('/');
+        const extMatch = downloadUrl.match(/\.([a-z0-9]+)(\?|$)/i);
+        const ext = extMatch ? extMatch[1] : (isImage ? 'png' : 'zip');
+        const sanitizedTitle = template.title.replace(/[^a-z0-9]/gi, '_');
+
+        try {
+            // Generate Signed URL - this is more robust for 'raw' files with extensions in ID
+            const secureUrl = cloudinary.url(publicId, {
+                resource_type: resourceType,
+                type: deliveryType,
+                version: version,
+                secure: true,
+                sign_url: true,
+                flags: 'attachment',
+                attachment: `${sanitizedTitle}.${ext}`,
+                expires_at: Math.floor(Date.now() / 1000) + 3600
+            });
+
+            console.log(`[Download] Signed URL generated successfully.`);
+
+            return res.status(200).json({
+                success: true,
+                redirectUrl: secureUrl
+            });
+        } catch (err) {
+            console.error('[Download] Cloudinary Error:', err);
+            return res.status(200).json({
+                success: true,
+                redirectUrl: downloadUrl // Fallback
+            });
+        }
     }),
 };
 

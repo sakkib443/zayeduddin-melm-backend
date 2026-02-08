@@ -48,11 +48,20 @@ const AuthService = {
             throw new AppError(400, 'Email already registered. Please login.');
         }
 
-        // Create user
+        // Generate email verification token
+        const verificationToken = crypto.randomBytes(32).toString('hex');
+        const hashedVerificationToken = crypto
+            .createHash('sha256')
+            .update(verificationToken)
+            .digest('hex');
+
+        // Create user with pending status
         const user = await User.create({
             ...payload,
-            status: 'active', // Or 'pending' if email verification required
+            status: 'pending', // User needs to verify email first
             isEmailVerified: false,
+            emailVerificationToken: hashedVerificationToken,
+            emailVerificationExpires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
         });
 
         // Generate tokens
@@ -64,9 +73,9 @@ const AuthService = {
 
         const tokens = this.generateTokens(jwtPayload);
 
-        // Send welcome email (async, don't wait)
-        EmailService.sendWelcomeEmail(user.email, user.firstName).catch(err =>
-            console.error('Welcome email error:', err)
+        // Send email verification email (async, don't wait)
+        EmailService.sendEmailVerificationEmail(user.email, user.firstName, verificationToken).catch(err =>
+            console.error('Email verification email error:', err)
         );
 
         return {
@@ -199,8 +208,9 @@ const AuthService = {
         user.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
         await user.save({ validateBeforeSave: false });
 
-        // Return plain token (will be sent via email)
-        // TODO: Send email with reset link
+        // Send password reset email
+        await EmailService.sendPasswordResetEmail(user.email, user.firstName, resetToken);
+
         return resetToken;
     },
 
@@ -270,6 +280,73 @@ const AuthService = {
         } catch {
             throw new AppError(401, 'Invalid or expired token');
         }
+    },
+
+    // ==================== VERIFY EMAIL ====================
+    /**
+     * Verify user email using token
+     * Email verification token দিয়ে email verify করা
+     */
+    async verifyEmail(token: string): Promise<void> {
+        // Hash the token to compare with stored hash
+        const hashedToken = crypto
+            .createHash('sha256')
+            .update(token)
+            .digest('hex');
+
+        // Find user with valid token
+        const user = await User.findOne({
+            emailVerificationToken: hashedToken,
+            emailVerificationExpires: { $gt: Date.now() },
+            isDeleted: false,
+        });
+
+        if (!user) {
+            throw new AppError(400, 'Invalid or expired verification token');
+        }
+
+        // Verify email and activate account
+        user.isEmailVerified = true;
+        user.status = 'active';
+        user.emailVerificationToken = undefined;
+        user.emailVerificationExpires = undefined;
+        await user.save({ validateBeforeSave: false });
+
+        // Send welcome email
+        EmailService.sendWelcomeEmail(user.email, user.firstName).catch(err =>
+            console.error('Welcome email error:', err)
+        );
+    },
+
+    // ==================== RESEND VERIFICATION EMAIL ====================
+    /**
+     * Resend email verification email
+     * নতুন verification email পাঠানো
+     */
+    async resendVerificationEmail(email: string): Promise<void> {
+        const user = await User.findOne({ email, isDeleted: false });
+
+        if (!user) {
+            throw new AppError(404, 'No user found with this email');
+        }
+
+        if (user.isEmailVerified) {
+            throw new AppError(400, 'Email is already verified');
+        }
+
+        // Generate new verification token
+        const verificationToken = crypto.randomBytes(32).toString('hex');
+        const hashedVerificationToken = crypto
+            .createHash('sha256')
+            .update(verificationToken)
+            .digest('hex');
+
+        user.emailVerificationToken = hashedVerificationToken;
+        user.emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+        await user.save({ validateBeforeSave: false });
+
+        // Send verification email
+        await EmailService.sendEmailVerificationEmail(user.email, user.firstName, verificationToken);
     },
 };
 

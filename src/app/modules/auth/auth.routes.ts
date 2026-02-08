@@ -13,6 +13,8 @@ import {
     forgotPasswordValidation,
     resetPasswordValidation,
     updatePasswordValidation,
+    verifyEmailValidation,
+    resendVerificationValidation,
 } from './auth.validation';
 import { authMiddleware } from '../../middlewares/auth';
 
@@ -95,5 +97,27 @@ router.post(
  * Logout করা
  */
 router.post('/logout', AuthController.logout);
+
+/**
+ * POST /api/auth/verify-email
+ * Verify email using token
+ * Email verification করা
+ */
+router.post(
+    '/verify-email',
+    validateRequest(verifyEmailValidation),
+    AuthController.verifyEmail
+);
+
+/**
+ * POST /api/auth/resend-verification
+ * Resend verification email
+ * নতুন verification email পাঠানো
+ */
+router.post(
+    '/resend-verification',
+    validateRequest(resendVerificationValidation),
+    AuthController.resendVerificationEmail
+);
 
 export const AuthRoutes = router;

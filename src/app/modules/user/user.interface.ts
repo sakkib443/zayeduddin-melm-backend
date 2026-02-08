@@ -32,6 +32,7 @@ export interface IUser {
   firstName: string;
   lastName: string;
   phone: string;  // Mandatory phone number
+  countryCode?: string;  // Phone country code (e.g., +880)
   avatar?: string;
   role: TUserRole;
   status: TUserStatus;
@@ -42,12 +43,15 @@ export interface IUser {
   bio?: string;           // Short biography
   address?: string;       // Street address
   city?: string;          // City name
+  state?: string;         // State/Division name
+  postalCode?: string;    // Postal/ZIP code
   country?: string;       // Country name
   website?: string;       // Personal/company website
   company?: string;       // Company/organization name
   jobTitle?: string;      // Job designation
   dateOfBirth?: Date;     // Birth date
   gender?: 'male' | 'female' | 'other';
+  aboutStudent?: string;  // About the student
 
   // Social media links
   socialLinks?: {
@@ -76,6 +80,10 @@ export interface IUser {
   passwordResetToken?: string;
   passwordResetExpires?: Date;
   passwordChangedAt?: Date;
+
+  // Email verification fields
+  emailVerificationToken?: string;
+  emailVerificationExpires?: Date;
 
   // Timestamps
   createdAt?: Date;
