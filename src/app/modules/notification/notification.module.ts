@@ -31,8 +31,7 @@ const NotificationSchema = new Schema<INotification>(
     {
         type: {
             type: String,
-            enum: ['order', 'enrollment', 'review', 'user', 'course', 'system', 'like', 'blog', 'design-template'],
-
+            enum: ['order', 'enrollment', 'review', 'user', 'course', 'system', 'like', 'blog', 'design-template', 'live_class', 'batch'],
             required: true,
         },
         title: {
@@ -50,8 +49,11 @@ const NotificationSchema = new Schema<INotification>(
             courseId: { type: Schema.Types.ObjectId, ref: 'Course' },
             enrollmentId: { type: Schema.Types.ObjectId, ref: 'Enrollment' },
             reviewId: { type: Schema.Types.ObjectId, ref: 'Review' },
+            liveClassId: { type: Schema.Types.ObjectId, ref: 'LiveClass' },
+            batchId: { type: Schema.Types.ObjectId, ref: 'Batch' },
             amount: Number,
             link: String,
+            meetingLink: String,
         },
         isRead: {
             type: Boolean,
@@ -238,6 +240,52 @@ export const NotificationService = {
     async getUnreadCount(): Promise<number> {
         return Notification.countDocuments({ forAdmin: true, isRead: false });
     },
+
+    // ============ STUDENT NOTIFICATION METHODS ============
+    // Get student notifications
+    async getStudentNotifications(userId: Types.ObjectId, page: number = 1, limit: number = 20) {
+        const skip = (page - 1) * limit;
+
+        const [notifications, total, unreadCount] = await Promise.all([
+            Notification.find({ forUser: userId })
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit)
+                .lean(),
+            Notification.countDocuments({ forUser: userId }),
+            Notification.countDocuments({ forUser: userId, isRead: false }),
+        ]);
+
+        return {
+            notifications,
+            meta: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+                unreadCount,
+            },
+        };
+    },
+
+    // Get student unread count
+    async getStudentUnreadCount(userId: Types.ObjectId): Promise<number> {
+        return Notification.countDocuments({ forUser: userId, isRead: false });
+    },
+
+    // Mark student notification as read
+    async markStudentNotificationAsRead(notificationId: string, userId: Types.ObjectId): Promise<INotification | null> {
+        return Notification.findOneAndUpdate(
+            { _id: notificationId, forUser: userId },
+            { isRead: true },
+            { new: true }
+        );
+    },
+
+    // Mark all student notifications as read
+    async markAllStudentNotificationsAsRead(userId: Types.ObjectId): Promise<void> {
+        await Notification.updateMany({ forUser: userId, isRead: false }, { isRead: true });
+    },
 };
 
 // ============ CONTROLLER ============
@@ -302,9 +350,64 @@ const getUnreadCount = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+// ============ STUDENT CONTROLLERS ============
+const getStudentNotifications = catchAsync(async (req: Request, res: Response) => {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
+    const userId = (req as any).user._id;
+
+    const result = await NotificationService.getStudentNotifications(userId, page, limit);
+
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: 'Student notifications retrieved successfully',
+        meta: result.meta,
+        data: result.notifications,
+    });
+});
+
+const getStudentUnreadCount = catchAsync(async (req: Request, res: Response) => {
+    const userId = (req as any).user._id;
+    const count = await NotificationService.getStudentUnreadCount(userId);
+
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: 'Unread count retrieved',
+        data: { count },
+    });
+});
+
+const markStudentNotificationAsRead = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const userId = (req as any).user._id;
+    const notification = await NotificationService.markStudentNotificationAsRead(id, userId);
+
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: 'Notification marked as read',
+        data: notification,
+    });
+});
+
+const markAllStudentNotificationsAsRead = catchAsync(async (req: Request, res: Response) => {
+    const userId = (req as any).user._id;
+    await NotificationService.markAllStudentNotificationsAsRead(userId);
+
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: 'All notifications marked as read',
+        data: null,
+    });
+});
+
 // ============ ROUTES ============
 const router: Router = express.Router();
 
+// ===== Admin Routes =====
 router.get(
     '/',
     authMiddleware,
@@ -338,6 +441,31 @@ router.delete(
     authMiddleware,
     authorizeRoles('admin'),
     deleteNotification
+);
+
+// ===== Student Routes =====
+router.get(
+    '/student/my-notifications',
+    authMiddleware,
+    getStudentNotifications
+);
+
+router.get(
+    '/student/unread-count',
+    authMiddleware,
+    getStudentUnreadCount
+);
+
+router.patch(
+    '/student/:id/read',
+    authMiddleware,
+    markStudentNotificationAsRead
+);
+
+router.patch(
+    '/student/mark-all-read',
+    authMiddleware,
+    markAllStudentNotificationsAsRead
 );
 
 export const NotificationRoutes = router;
