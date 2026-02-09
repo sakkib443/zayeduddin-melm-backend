@@ -354,7 +354,7 @@ const getUnreadCount = catchAsync(async (req: Request, res: Response) => {
 const getStudentNotifications = catchAsync(async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
-    const userId = (req as any).user._id;
+    const userId = (req as any).user.userId;
 
     const result = await NotificationService.getStudentNotifications(userId, page, limit);
 
@@ -368,7 +368,7 @@ const getStudentNotifications = catchAsync(async (req: Request, res: Response) =
 });
 
 const getStudentUnreadCount = catchAsync(async (req: Request, res: Response) => {
-    const userId = (req as any).user._id;
+    const userId = (req as any).user.userId;
     const count = await NotificationService.getStudentUnreadCount(userId);
 
     sendResponse(res, {
@@ -381,7 +381,7 @@ const getStudentUnreadCount = catchAsync(async (req: Request, res: Response) => 
 
 const markStudentNotificationAsRead = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const userId = (req as any).user._id;
+    const userId = (req as any).user.userId;
     const notification = await NotificationService.markStudentNotificationAsRead(id, userId);
 
     sendResponse(res, {
@@ -393,7 +393,7 @@ const markStudentNotificationAsRead = catchAsync(async (req: Request, res: Respo
 });
 
 const markAllStudentNotificationsAsRead = catchAsync(async (req: Request, res: Response) => {
-    const userId = (req as any).user._id;
+    const userId = (req as any).user.userId;
     await NotificationService.markAllStudentNotificationsAsRead(userId);
 
     sendResponse(res, {

@@ -8,6 +8,7 @@ import { Enrollment } from './enrollment.model';
 import { Course } from '../course/course.model';
 import { Lesson } from '../lesson/lesson.model';
 import { User } from '../user/user.model';
+import { Batch } from '../batch/batch.model';
 import { IEnrollment, IEnrollmentFilters, IEnrollmentStats } from './enrollment.interface';
 import AppError from '../../utils/AppError';
 import { Types } from 'mongoose';
@@ -57,11 +58,35 @@ const enrollStudent = async (
         isPublished: true,
     });
 
-    // Create enrollment
+    // Find the latest active batch for this course (for online courses)
+    let batchId: Types.ObjectId | undefined;
+    if (course.courseType === 'online') {
+        const activeBatch = await Batch.findOne({
+            course: courseId,
+            isActive: true,
+            status: { $in: ['upcoming', 'ongoing'] },
+            $or: [
+                { enrollmentDeadline: { $exists: false } },
+                { enrollmentDeadline: null },
+                { enrollmentDeadline: { $gte: new Date() } }
+            ]
+        }).sort({ startDate: -1 });
+
+        if (activeBatch && activeBatch.enrolledCount < activeBatch.maxStudents) {
+            batchId = activeBatch._id as Types.ObjectId;
+            // Increment batch enrolled count
+            await Batch.findByIdAndUpdate(batchId, {
+                $inc: { enrolledCount: 1 }
+            });
+        }
+    }
+
+    // Create enrollment with batch if available
     const enrollment = await Enrollment.create({
         student: studentId,
         course: courseId,
         order: orderId,
+        batch: batchId,
         totalLessons,
         enrolledAt: new Date(),
     });
@@ -92,6 +117,7 @@ const enrollStudent = async (
 
     return enrollment;
 };
+
 
 /**
  * Get enrollment by ID

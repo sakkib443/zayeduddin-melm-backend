@@ -9,6 +9,8 @@ import { Batch } from './batch.model';
 import { Course } from '../course/course.model';
 import { Enrollment } from '../enrollment/enrollment.model';
 import AppError from '../../utils/AppError';
+import { NotificationService } from '../notification/notification.module';
+
 
 // ==================== Create Batch ====================
 const createBatch = async (payload: IBatch): Promise<IBatch> => {
@@ -89,6 +91,10 @@ const getBatchById = async (id: string): Promise<IBatch> => {
 
 // ==================== Update Batch ====================
 const updateBatch = async (id: string, payload: Partial<IBatch>): Promise<IBatch> => {
+    // Get original batch to check if meetingLink is being added/updated
+    const originalBatch = await Batch.findById(id);
+    const isNewMeetingLink = payload.meetingLink && (!originalBatch?.meetingLink || originalBatch.meetingLink !== payload.meetingLink);
+
     const batch = await Batch.findByIdAndUpdate(id, payload, {
         new: true,
         runValidators: true,
@@ -99,8 +105,45 @@ const updateBatch = async (id: string, payload: Partial<IBatch>): Promise<IBatch
     if (!batch) {
         throw new AppError(404, 'Batch not found');
     }
+
+    // Send notifications to enrolled students when meeting link is added/updated
+    if (isNewMeetingLink) {
+        try {
+            // Find all students enrolled in courses that this batch belongs to
+            const enrollments = await Enrollment.find({
+                course: batch.course,
+                status: 'active'
+            }).select('student');
+
+            const courseTitle = (batch.course as any)?.title || 'your course';
+
+            // Send notification to each student
+            for (const enrollment of enrollments) {
+                await NotificationService.createNotification({
+                    type: 'live_class' as any,
+                    title: '🎥 Live Class Link Added!',
+                    message: `A live class link has been added for "${batch.batchName}" (${courseTitle}). Join your scheduled classes now!`,
+                    data: {
+                        batchId: batch._id,
+                        link: '/dashboard/user/live-classes',
+                        meetingLink: payload.meetingLink,
+                    } as any,
+                    isRead: false,
+                    forAdmin: false,
+                    forUser: enrollment.student,
+                });
+            }
+
+            console.log(`Notifications sent to ${enrollments.length} students for batch ${batch.batchName}`);
+        } catch (error) {
+            console.error('Error sending batch notifications:', error);
+            // Don't throw error, just log it - notifications are not critical
+        }
+    }
+
     return batch;
 };
+
 
 // ==================== Delete Batch ====================
 const deleteBatch = async (id: string): Promise<IBatch> => {
@@ -184,18 +227,55 @@ const removeStudentFromBatch = async (batchId: string, studentId: string): Promi
 
 // ==================== Get My Batches (Student) ====================
 const getMyBatches = async (studentId: string) => {
-    const enrollments = await Enrollment.find({ student: studentId, batch: { $exists: true } })
-        .populate({
-            path: 'batch',
-            populate: [
-                { path: 'course', select: 'title slug thumbnail' },
-                { path: 'instructor', select: 'name email avatar' },
-            ],
-        })
-        .sort({ enrolledAt: -1 });
+    console.log('=== getMyBatches called ===');
+    console.log('Student ID:', studentId);
 
-    return enrollments.map((e) => e.batch).filter(Boolean);
+    // First, get all courses the student is enrolled in
+    const enrollments = await Enrollment.find({
+        student: studentId,
+    }).select('course batch status');
+
+    console.log('Enrollments found:', enrollments.length);
+    console.log('Enrollments:', JSON.stringify(enrollments, null, 2));
+
+    if (enrollments.length === 0) {
+        console.log('No enrollments found for student');
+        return [];
+    }
+
+    const courseIds = enrollments.map(e => e.course);
+    const directBatchIds = enrollments.map(e => e.batch).filter(Boolean);
+
+    console.log('Course IDs:', courseIds);
+    console.log('Direct Batch IDs:', directBatchIds);
+
+    // Find ALL batches for courses the student is enrolled in
+    const batches = await Batch.find({
+        course: { $in: courseIds }
+    })
+        .populate('course', 'title slug thumbnail')
+        .populate('instructor', 'name email avatar')
+        .sort({ startDate: -1 });
+
+    console.log('Batches found:', batches.length);
+    if (batches.length > 0) {
+        console.log('Batch details:', batches.map(b => ({
+            id: b._id,
+            name: b.batchName,
+            courseId: b.course,
+            status: b.status,
+            isActive: b.isActive
+        })));
+    } else {
+        // Check if any batches exist at all
+        const allBatches = await Batch.find({}).select('course batchName status isActive');
+        console.log('All batches in DB:', JSON.stringify(allBatches, null, 2));
+    }
+
+    return batches;
 };
+
+
 
 export const BatchService = {
     createBatch,
