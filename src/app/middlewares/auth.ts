@@ -19,7 +19,7 @@ declare global {
       user?: JwtPayload & {
         userId: string;
         email: string;
-        role: 'admin' | 'mentor' | 'student';
+        role: 'admin' | 'instructor' | 'student';
       };
     }
   }
@@ -58,7 +58,7 @@ export const authMiddleware = async (
     const decoded = jwt.verify(token, config.jwt.access_secret) as JwtPayload & {
       userId: string;
       email: string;
-      role: 'admin' | 'mentor' | 'student';
+      role: 'admin' | 'instructor' | 'student';
     };
 
     // ==================== 3. Check if User Exists ====================
@@ -94,7 +94,7 @@ export const authMiddleware = async (
  * @example
  * router.delete('/user/:id', authMiddleware, authorizeRoles('admin'), UserController.delete);
  */
-export const authorizeRoles = (...allowedRoles: ('admin' | 'mentor' | 'student')[]) => {
+export const authorizeRoles = (...allowedRoles: ('admin' | 'instructor' | 'student')[]) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     // User এর role allowed list এ আছে কিনা check করা
     if (!req.user || !allowedRoles.includes(req.user.role)) {
@@ -127,7 +127,7 @@ export const optionalAuth = async (
           const decoded = jwt.verify(token, config.jwt.access_secret) as JwtPayload & {
             userId: string;
             email: string;
-            role: 'admin' | 'mentor' | 'student';
+            role: 'admin' | 'instructor' | 'student';
           };
           req.user = decoded;
         } catch {

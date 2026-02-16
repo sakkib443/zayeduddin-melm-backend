@@ -44,7 +44,7 @@ const createBlog = async (payload: Partial<IBlog>, userId: string, userRole: str
         ...payload,
         slug,
         author: new Types.ObjectId(userId),
-        authorRole: userRole as 'admin' | 'mentor',
+        authorRole: userRole as 'admin' | 'instructor',
     };
 
     const blog = await Blog.create(blogData);

@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 
 /**
  * Middleware: Role-based access control
- * Usage: checkRole('admin'), checkRole('mentor', 'student')
+ * Usage: checkRole('admin'), checkRole('instructor', 'student')
  */
 export const checkRole = (...allowedRoles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -24,4 +24,4 @@ export const checkRole = (...allowedRoles: string[]) => {
 
 // Example Usage in route:
 // router.get('/admin-area', authMiddleware, checkRole('admin'), AdminController.getDashboard);
-// router.post('/course', authMiddleware, checkRole('mentor'), CourseController.createCourse);
+// router.post('/course', authMiddleware, checkRole('instructor'), CourseController.createCourse);

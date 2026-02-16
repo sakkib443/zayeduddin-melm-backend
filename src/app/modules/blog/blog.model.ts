@@ -78,7 +78,7 @@ const blogSchema = new Schema<IBlog, BlogModel>(
         },
         authorRole: {
             type: String,
-            enum: ['admin', 'mentor'],
+            enum: ['admin', 'instructor'],
             required: true,
         },
 

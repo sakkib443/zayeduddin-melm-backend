@@ -43,6 +43,7 @@ import { BlogRoutes } from './app/modules/blog/blog.routes';
 import { DesignTemplateRoutes } from './app/modules/designTemplate/designTemplate.routes';
 import { BatchRoutes } from './app/modules/batch/batch.routes';
 import { LiveClassRoutes } from './app/modules/liveClass/liveClass.routes';
+import { InstructorRoutes } from './app/modules/instructor/instructor.routes';
 
 
 // ==================== App Initialization ====================
@@ -203,6 +204,9 @@ app.use('/api/batches', BatchRoutes);
 
 // Live Class routes (live classes for batches)
 app.use('/api/live-classes', LiveClassRoutes);
+
+// Instructor routes (instructor management)
+app.use('/api/instructors', InstructorRoutes);
 
 // ==================== Error Handling ====================
 // 404 Not Found handler (must be after all routes)

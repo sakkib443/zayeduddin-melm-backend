@@ -17,7 +17,7 @@ const router = express.Router();
 router.post(
     '/',
     authMiddleware,
-    checkRole('admin', 'mentor'),
+    checkRole('admin', 'instructor'),
     validateRequest(BatchValidation.createBatchSchema),
     BatchController.createBatch
 );
@@ -25,7 +25,7 @@ router.post(
 router.get(
     '/',
     authMiddleware,
-    checkRole('admin', 'mentor'),
+    checkRole('admin', 'instructor'),
     BatchController.getAllBatches
 );
 
@@ -50,7 +50,7 @@ router.get(
 router.patch(
     '/:id',
     authMiddleware,
-    checkRole('admin', 'mentor'),
+    checkRole('admin', 'instructor'),
     validateRequest(BatchValidation.updateBatchSchema),
     BatchController.updateBatch
 );
@@ -66,7 +66,7 @@ router.delete(
 router.post(
     '/:id/enroll',
     authMiddleware,
-    checkRole('admin', 'mentor'),
+    checkRole('admin', 'instructor'),
     validateRequest(BatchValidation.enrollStudentSchema),
     BatchController.enrollStudent
 );
@@ -74,14 +74,14 @@ router.post(
 router.get(
     '/:id/students',
     authMiddleware,
-    checkRole('admin', 'mentor'),
+    checkRole('admin', 'instructor'),
     BatchController.getBatchStudents
 );
 
 router.delete(
     '/:id/students/:studentId',
     authMiddleware,
-    checkRole('admin', 'mentor'),
+    checkRole('admin', 'instructor'),
     BatchController.removeStudent
 );
 

@@ -56,7 +56,7 @@ export const registerValidation = z.object({
     gender: z.enum(['male', 'female', 'other', '']).optional(),
     aboutStudent: z.string().max(1000).optional(),
 
-    role: z.enum(['student', 'admin', 'mentor']).optional().default('student'),
+    role: z.enum(['student', 'admin', 'instructor']).optional().default('student'),
   }),
 });
 

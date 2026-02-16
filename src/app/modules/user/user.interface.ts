@@ -8,10 +8,10 @@ import { Model, Types } from 'mongoose';
 /**
  * User Role Types
  * admin - System administrator with full access
- * mentor - Limited admin access (create/update only, no delete, no analytics)
+ * instructor - Limited admin access (create/update only, no delete, no analytics)
  * student - Learner who enrolls in courses and purchases products
  */
-export type TUserRole = 'admin' | 'mentor' | 'student';
+export type TUserRole = 'admin' | 'instructor' | 'student';
 
 /**
  * User Status Types

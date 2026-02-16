@@ -38,7 +38,7 @@ router.get('/slug/:slug', CategoryController.getCategoryBySlug);
 router.get(
     '/admin/all',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     CategoryController.getAllCategories
 );
 
@@ -46,7 +46,7 @@ router.get(
 router.get(
     '/admin/parents',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     CategoryController.getParentCategories
 );
 
@@ -54,7 +54,7 @@ router.get(
 router.get(
     '/admin/:id',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     CategoryController.getCategoryById
 );
 
@@ -62,7 +62,7 @@ router.get(
 router.post(
     '/admin',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     validateRequest(createCategoryValidation),
     CategoryController.createCategory
 );
@@ -71,7 +71,7 @@ router.post(
 router.patch(
     '/admin/:id',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     validateRequest(updateCategoryValidation),
     CategoryController.updateCategory
 );

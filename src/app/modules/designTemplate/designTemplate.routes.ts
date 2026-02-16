@@ -25,7 +25,7 @@ router.get('/slug/:slug', optionalAuth, DesignTemplateController.getDesignTempla
 router.post(
     '/admin/upload-images',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     uploadDesignTemplateImages,
     DesignTemplateController.uploadImages
 );
@@ -34,7 +34,7 @@ router.post(
 router.post(
     '/admin/upload-file',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     uploadDesignTemplateFile,
     DesignTemplateController.uploadDownloadFile
 );
@@ -43,7 +43,7 @@ router.post(
 router.post(
     '/admin',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     validateRequest(createDesignTemplateValidation),
     DesignTemplateController.createDesignTemplate
 );
@@ -52,7 +52,7 @@ router.post(
 router.patch(
     '/admin/managed/:id',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     validateRequest(updateDesignTemplateValidation),
     DesignTemplateController.updateDesignTemplate
 );
@@ -69,7 +69,7 @@ router.delete(
 router.get(
     '/admin/all',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     DesignTemplateController.getAdminDesignTemplates
 );
 
@@ -77,7 +77,7 @@ router.get(
 router.patch(
     '/admin/:id/status',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     DesignTemplateController.updateDesignTemplateStatus
 );
 

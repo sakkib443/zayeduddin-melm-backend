@@ -34,6 +34,15 @@ const getDashboardStats = async () => {
         // Count total enrollments/downloads
         const totalEnrollments = await Enrollment.countDocuments({});
 
+        // Calculate total downloads (sum of salesCount from templates + websites)
+        const templateSales = await DesignTemplate.aggregate([
+            { $group: { _id: null, total: { $sum: '$salesCount' } } }
+        ]);
+        const websiteSales = await Website.aggregate([
+            { $group: { _id: null, total: { $sum: { $ifNull: ['$salesCount', 0] } } } }
+        ]);
+        const totalDownloads = (templateSales[0]?.total || 0) + (websiteSales[0]?.total || 0) + totalEnrollments;
+
         // Calculate average rating from reviews
         const reviewStats = await Review.aggregate([
             { $match: { isDeleted: { $ne: true } } },
@@ -46,6 +55,7 @@ const getDashboardStats = async () => {
         return {
             activeUsers: totalUsers,
             downloads: totalEnrollments,
+            totalDownloads: totalDownloads,
             avgRating: Math.round(avgRating * 10) / 10, // Round to 1 decimal
             totalProducts: totalProducts,
             // Extra details - use all counts to show actual data
@@ -55,6 +65,7 @@ const getDashboardStats = async () => {
                 designTemplates: allDesignTemplates || totalDesignTemplates,
                 users: totalUsers,
                 enrollments: totalEnrollments,
+                downloads: totalDownloads,
                 reviews: totalReviews
             }
         };

@@ -79,7 +79,7 @@ export interface IResetPasswordPayload {
 export interface IJwtPayload {
     userId: string;
     email: string;
-    role: 'admin' | 'mentor' | 'student';
+    role: 'admin' | 'instructor' | 'student';
     iat?: number;
     exp?: number;
 }

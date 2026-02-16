@@ -109,7 +109,7 @@ router.delete(
 router.post(
     '/',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     validateRequest(BlogValidation.createBlogSchema),
     BlogController.createBlog
 );
@@ -118,7 +118,7 @@ router.post(
 router.patch(
     '/:id',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     validateRequest(BlogValidation.updateBlogSchema),
     BlogController.updateBlog
 );
@@ -127,7 +127,7 @@ router.patch(
 router.delete(
     '/:id',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     BlogController.deleteBlog
 );
 

@@ -73,7 +73,7 @@ router.get(
 router.get(
     '/',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     LessonController.getAllLessons
 );
 
@@ -81,7 +81,7 @@ router.get(
 router.post(
     '/',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     validateRequest(LessonValidation.createLessonSchema),
     LessonController.createLesson
 );
@@ -90,7 +90,7 @@ router.post(
 router.post(
     '/bulk',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     validateRequest(LessonValidation.bulkCreateLessonsSchema),
     LessonController.bulkCreateLessons
 );
@@ -99,7 +99,7 @@ router.post(
 router.patch(
     '/reorder',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     validateRequest(LessonValidation.reorderLessonsSchema),
     LessonController.reorderLessons
 );
@@ -108,7 +108,7 @@ router.patch(
 router.patch(
     '/:id/toggle-publish',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     LessonController.togglePublishStatus
 );
 
@@ -116,7 +116,7 @@ router.patch(
 router.patch(
     '/:id',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     validateRequest(LessonValidation.updateLessonSchema),
     LessonController.updateLesson
 );
@@ -135,7 +135,7 @@ router.delete(
 router.post(
     '/:id/questions',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     validateRequest(LessonValidation.addQuestionSchema),
     LessonController.addQuestion
 );
@@ -144,7 +144,7 @@ router.post(
 router.patch(
     '/:id/questions/reorder',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     LessonController.reorderQuestions
 );
 
@@ -152,7 +152,7 @@ router.patch(
 router.patch(
     '/:id/questions/:questionId',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     validateRequest(LessonValidation.updateQuestionSchema),
     LessonController.updateQuestion
 );
@@ -171,7 +171,7 @@ router.delete(
 router.post(
     '/:id/documents',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     validateRequest(LessonValidation.addDocumentSchema),
     LessonController.addDocument
 );
@@ -180,7 +180,7 @@ router.post(
 router.patch(
     '/:id/documents/:documentId',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     LessonController.updateDocument
 );
 
@@ -198,7 +198,7 @@ router.delete(
 router.post(
     '/:id/text-blocks',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     validateRequest(LessonValidation.addTextBlockSchema),
     LessonController.addTextBlock
 );
@@ -207,7 +207,7 @@ router.post(
 router.patch(
     '/:id/text-blocks/:textBlockId',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     LessonController.updateTextBlock
 );
 

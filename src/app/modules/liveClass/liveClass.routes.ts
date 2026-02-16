@@ -24,7 +24,7 @@ router.get(
 router.post(
     '/',
     authMiddleware,
-    checkRole('admin', 'mentor'),
+    checkRole('admin', 'instructor'),
     validateRequest(LiveClassValidation.createLiveClassSchema),
     LiveClassController.createLiveClass
 );
@@ -32,14 +32,14 @@ router.post(
 router.get(
     '/',
     authMiddleware,
-    checkRole('admin', 'mentor'),
+    checkRole('admin', 'instructor'),
     LiveClassController.getAllLiveClasses
 );
 
 router.get(
     '/today',
     authMiddleware,
-    checkRole('admin', 'mentor'),
+    checkRole('admin', 'instructor'),
     LiveClassController.getTodayClasses
 );
 
@@ -58,7 +58,7 @@ router.get(
 router.patch(
     '/:id',
     authMiddleware,
-    checkRole('admin', 'mentor'),
+    checkRole('admin', 'instructor'),
     validateRequest(LiveClassValidation.updateLiveClassSchema),
     LiveClassController.updateLiveClass
 );
@@ -66,7 +66,7 @@ router.patch(
 router.delete(
     '/:id',
     authMiddleware,
-    checkRole('admin', 'mentor'),
+    checkRole('admin', 'instructor'),
     LiveClassController.deleteLiveClass
 );
 
@@ -74,7 +74,7 @@ router.delete(
 router.patch(
     '/:id/status',
     authMiddleware,
-    checkRole('admin', 'mentor'),
+    checkRole('admin', 'instructor'),
     validateRequest(LiveClassValidation.updateStatusSchema),
     LiveClassController.updateStatus
 );
@@ -82,14 +82,14 @@ router.patch(
 router.post(
     '/:id/notify',
     authMiddleware,
-    checkRole('admin', 'mentor'),
+    checkRole('admin', 'instructor'),
     LiveClassController.sendNotification
 );
 
 router.post(
     '/:id/recording',
     authMiddleware,
-    checkRole('admin', 'mentor'),
+    checkRole('admin', 'instructor'),
     LiveClassController.addRecording
 );
 

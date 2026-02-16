@@ -84,7 +84,7 @@ router.post(
 router.post(
     '/',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     validateRequest(CourseValidation.createCourseSchema),
     CourseController.createCourse
 );
@@ -93,7 +93,7 @@ router.post(
 router.patch(
     '/:id',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     validateRequest(CourseValidation.updateCourseSchema),
     CourseController.updateCourse
 );

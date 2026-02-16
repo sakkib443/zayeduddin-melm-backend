@@ -33,7 +33,7 @@ router.get(
 router.post(
     '/',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     validateRequest(ModuleValidation.createModuleSchema),
     ModuleController.createModule
 );
@@ -42,7 +42,7 @@ router.post(
 router.patch(
     '/:id',
     authMiddleware,
-    authorizeRoles('admin', 'mentor'),
+    authorizeRoles('admin', 'instructor'),
     validateRequest(ModuleValidation.updateModuleSchema),
     ModuleController.updateModule
 );
