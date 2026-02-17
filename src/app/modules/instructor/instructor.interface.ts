@@ -21,22 +21,27 @@ export interface IInstructor {
     userId: Types.ObjectId;             // Reference to User (role: instructor)
 
     // ==================== Basic Info ====================
-    title: string;                      // e.g. "Senior UI/UX Designer"
+    title: string;                      // e.g. "UX/UI Designer"
     titleBn?: string;                   // Title in Bengali
-    bio: string;                        // Short biography
+    bio: string;                        // Short biography (card display)
     bioBn?: string;                     // Bio in Bengali
-    longBio?: string;                   // Detailed biography
+    longBio?: string;                   // Life Journey / Detailed biography
     longBioBn?: string;                 // Detailed bio in Bengali
 
     // ==================== Media ====================
-    avatar?: string;                    // Profile image
-    coverImage?: string;                // Cover/banner image
+    avatar?: string;                    // Profile image URL
+    coverImage?: string;                // Cover/banner image URL
 
     // ==================== Professional Info ====================
-    expertise: string[];                // Areas of expertise
-    experience: number;                 // Years of experience
-    education?: string;                 // Educational background
+    expertise: string[];                // e.g. ["User Experience Design", "Figma", "Adobe XD"]
+    experience: number;                 // Years of experience (e.g. 16)
+    specializations: number;            // Total specialization count (e.g. 5)
+    education: string[];                // e.g. ["BSc in Computer Science", "Diploma in UX/UI Design"]
+    workExperience: string[];           // e.g. ["Lead UX Designer at Creative IT", "Freelance Designer"]
     certifications?: string[];          // Professional certifications
+
+    // ==================== Contact ====================
+    whatsAppNumber?: string;            // WhatsApp contact number
 
     // ==================== Social Links ====================
     socialLinks?: {
@@ -55,7 +60,7 @@ export interface IInstructor {
     // ==================== Statistics ====================
     rating: number;                     // Average rating
     reviewCount: number;                // Total reviews
-    totalStudents: number;              // Total students taught
+    totalStudents: number;              // Total students taught (e.g. 2500)
     totalCourses: number;               // Total courses
 
     // ==================== Status & Visibility ====================

@@ -48,8 +48,11 @@ const createInstructor = async (payload: TCreateInstructorInput) => {
         coverImage: payload.coverImage || '',
         expertise: payload.expertise || [],
         experience: payload.experience || 0,
-        education: payload.education || '',
+        specializations: payload.specializations || 0,
+        education: payload.education || [],
+        workExperience: payload.workExperience || [],
         certifications: payload.certifications || [],
+        whatsAppNumber: payload.whatsAppNumber || '',
         socialLinks: payload.socialLinks || {},
         isPublished: payload.isPublished !== undefined ? payload.isPublished : true,
         order: payload.order || 0,
@@ -189,8 +192,9 @@ const updateInstructor = async (id: string, payload: TUpdateInstructorInput) => 
     const instructorUpdateData: any = {};
     const instructorFields = [
         'title', 'titleBn', 'bio', 'bioBn', 'longBio', 'longBioBn',
-        'avatar', 'coverImage', 'expertise', 'experience', 'education',
-        'certifications', 'socialLinks', 'status', 'isPublished', 'order'
+        'avatar', 'coverImage', 'expertise', 'experience', 'specializations',
+        'education', 'workExperience', 'certifications', 'whatsAppNumber',
+        'socialLinks', 'status', 'isPublished', 'order'
     ];
 
     instructorFields.forEach(field => {

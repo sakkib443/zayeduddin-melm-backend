@@ -59,8 +59,12 @@ export const createInstructorValidation = z.object({
 
         expertise: z.array(z.string()).optional().default([]),
         experience: z.number().min(0).optional().default(0),
-        education: z.string().optional(),
+        specializations: z.number().min(0).optional().default(0),
+        education: z.array(z.string()).optional().default([]),
+        workExperience: z.array(z.string()).optional().default([]),
         certifications: z.array(z.string()).optional().default([]),
+
+        whatsAppNumber: z.string().optional(),
 
         socialLinks: z.object({
             facebook: z.string().optional(),
@@ -101,8 +105,12 @@ export const updateInstructorValidation = z.object({
 
         expertise: z.array(z.string()).optional(),
         experience: z.number().min(0).optional(),
-        education: z.string().optional(),
+        specializations: z.number().min(0).optional(),
+        education: z.array(z.string()).optional(),
+        workExperience: z.array(z.string()).optional(),
         certifications: z.array(z.string()).optional(),
+
+        whatsAppNumber: z.string().optional(),
 
         socialLinks: z.object({
             facebook: z.string().optional(),

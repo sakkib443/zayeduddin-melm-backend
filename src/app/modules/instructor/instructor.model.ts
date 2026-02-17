@@ -69,13 +69,29 @@ const instructorSchema = new Schema<IInstructor, InstructorModel>(
             default: 0,
             min: [0, 'Experience cannot be negative'],
         },
+        specializations: {
+            type: Number,
+            default: 0,
+            min: [0, 'Specializations cannot be negative'],
+        },
         education: {
-            type: String,
-            default: '',
+            type: [String],
+            default: [],
+        },
+        workExperience: {
+            type: [String],
+            default: [],
         },
         certifications: {
             type: [String],
             default: [],
+        },
+
+
+        // ==================== Contact ====================
+        whatsAppNumber: {
+            type: String,
+            default: '',
         },
 
         // ==================== Social Links ====================
