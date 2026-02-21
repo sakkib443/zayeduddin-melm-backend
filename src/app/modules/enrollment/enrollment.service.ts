@@ -200,6 +200,20 @@ const getCourseEnrollments = async (
 };
 
 /**
+ * Get all enrollments (admin)
+ */
+const getAllEnrollments = async () => {
+    const enrollments = await Enrollment.find({})
+        .populate('student', 'firstName lastName email avatar phone')
+        .populate('course', 'title titleBn slug thumbnail courseType level')
+        .populate('order', 'orderNumber totalAmount paymentStatus')
+        .populate('batch', 'batchName status startDate endDate')
+        .sort({ enrolledAt: -1 });
+
+    return enrollments;
+};
+
+/**
  * Update enrollment progress
  */
 const updateProgress = async (
@@ -343,16 +357,63 @@ const markAsCompleted = async (enrollmentId: string): Promise<IEnrollment | null
     return enrollment;
 };
 
+/**
+ * Update enrollment batch (admin)
+ */
+const updateBatch = async (
+    enrollmentId: string,
+    batchId: string | null
+): Promise<IEnrollment | null> => {
+    const enrollment = await Enrollment.findById(enrollmentId);
+    if (!enrollment) {
+        throw new AppError(404, 'Enrollment not found');
+    }
+
+    // Decrement old batch count if exists
+    if (enrollment.batch) {
+        await Batch.findByIdAndUpdate(enrollment.batch, {
+            $inc: { enrolledCount: -1 }
+        });
+    }
+
+    // Set new batch
+    if (batchId) {
+        const batch = await Batch.findById(batchId);
+        if (!batch) {
+            throw new AppError(404, 'Batch not found');
+        }
+        enrollment.batch = new Types.ObjectId(batchId);
+        // Increment new batch count
+        await Batch.findByIdAndUpdate(batchId, {
+            $inc: { enrolledCount: 1 }
+        });
+    } else {
+        enrollment.batch = undefined;
+    }
+
+    await enrollment.save();
+
+    // Re-fetch with populate
+    const updated = await Enrollment.findById(enrollmentId)
+        .populate('student', 'firstName lastName email avatar phone')
+        .populate('course', 'title titleBn slug thumbnail courseType level')
+        .populate('batch', 'batchName status startDate endDate');
+
+    return updated;
+};
+
 export const EnrollmentService = {
     enrollStudent,
     getEnrollmentById,
     getStudentCourseEnrollment,
     getStudentEnrollments,
     getCourseEnrollments,
+    getAllEnrollments,
     updateProgress,
     updateLastAccessed,
     isEnrolled,
     getStudentStats,
     cancelEnrollment,
     markAsCompleted,
+    updateBatch,
 };

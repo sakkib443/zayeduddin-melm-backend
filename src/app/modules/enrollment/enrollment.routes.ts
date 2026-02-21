@@ -10,6 +10,16 @@ import { authMiddleware, authorizeRoles } from '../../middlewares/auth';
 
 const router = express.Router();
 
+// ==================== Admin Routes (must come before /:id) ====================
+
+// Admin: Get all enrollments
+router.get(
+    '/',
+    authMiddleware,
+    authorizeRoles('admin'),
+    EnrollmentController.getAllEnrollments
+);
+
 // ==================== Student Routes (Authenticated) ====================
 
 // Enroll in a course
@@ -93,6 +103,14 @@ router.patch(
     authMiddleware,
     authorizeRoles('admin'),
     EnrollmentController.markAsCompleted
+);
+
+// Admin: Update enrollment batch
+router.patch(
+    '/admin/:id/batch',
+    authMiddleware,
+    authorizeRoles('admin'),
+    EnrollmentController.updateBatch
 );
 
 // Get enrollment by ID

@@ -161,6 +161,26 @@ const updateLastAccessed = async (req: Request, res: Response, next: NextFunctio
 // ==================== Admin Routes ====================
 
 /**
+ * Admin: Get all enrollments
+ * GET /api/enrollments
+ */
+const getAllEnrollments = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const enrollments = await EnrollmentService.getAllEnrollments();
+
+        res.status(200).json({
+            success: true,
+            message: 'All enrollments retrieved successfully',
+            data: enrollments,
+            meta: {
+                total: enrollments.length,
+            },
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+/**
  * Admin: Enroll a student
  * POST /api/enrollments/admin/enroll
  */
@@ -266,6 +286,27 @@ const getEnrollmentById = async (req: Request, res: Response, next: NextFunction
     }
 };
 
+/**
+ * Admin: Update enrollment batch
+ * PATCH /api/enrollments/admin/:id/batch
+ */
+const updateBatch = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        const { batchId } = req.body;
+
+        const enrollment = await EnrollmentService.updateBatch(id, batchId || null);
+
+        res.status(200).json({
+            success: true,
+            message: batchId ? 'Batch updated successfully' : 'Batch removed successfully',
+            data: enrollment,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 export const EnrollmentController = {
     enrollInCourse,
     getMyEnrollments,
@@ -274,9 +315,11 @@ export const EnrollmentController = {
     checkEnrollment,
     updateProgress,
     updateLastAccessed,
+    getAllEnrollments,
     adminEnrollStudent,
     getCourseEnrollments,
     cancelEnrollment,
     markAsCompleted,
     getEnrollmentById,
+    updateBatch,
 };
