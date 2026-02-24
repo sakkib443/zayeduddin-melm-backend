@@ -10,13 +10,86 @@ import AppError from '../../utils/AppError';
 import { User } from '../user/user.model';
 import { IAuthResponse, IJwtPayload, ITokens } from './auth.interface';
 import { TLoginInput, TRegisterInput } from './auth.validation';
+import { OAuth2Client } from 'google-auth-library';
 import EmailService from '../email/email.service';
+
+const client = new OAuth2Client(config.google.client_id);
 
 // ===================================================================
 // AUTH SERVICE
 // ===================================================================
 
 const AuthService = {
+    // ==================== GOOGLE LOGIN ====================
+    /**
+     * Google Login
+     * Google token verify করে login অথবা registration করা
+     */
+    async googleLogin(idToken: string): Promise<IAuthResponse> {
+        let ticket;
+        try {
+            ticket = await client.verifyIdToken({
+                idToken,
+                audience: config.google.client_id,
+            });
+        } catch (error) {
+            throw new AppError(401, 'Invalid Google token');
+        }
+
+        const payload = ticket.getPayload();
+        if (!payload || !payload.email) {
+            throw new AppError(401, 'Invalid Google token payload');
+        }
+
+        const { email, given_name, family_name, picture } = payload;
+
+        // Find user by email
+        let user = await User.findOne({ email, isDeleted: false });
+
+        if (!user) {
+            // Create new user if not exists
+            user = await User.create({
+                email,
+                firstName: given_name || 'User',
+                lastName: family_name || '',
+                avatar: picture || '',
+                password: crypto.randomBytes(16).toString('hex'), // Random password for social login
+                status: 'active',
+                isEmailVerified: true,
+            });
+
+            // Send welcome email for new social users
+            EmailService.sendWelcomeEmail(user.email, user.firstName).catch(err =>
+                console.error('Welcome email error:', err)
+            );
+        }
+
+        if (user.status === 'blocked') {
+            throw new AppError(403, 'Your account has been blocked. Contact support.');
+        }
+
+        // Generate tokens
+        const jwtPayload: IJwtPayload = {
+            userId: user._id!.toString(),
+            email: user.email,
+            role: user.role,
+        };
+
+        const tokens = this.generateTokens(jwtPayload);
+
+        return {
+            user: {
+                _id: user._id!.toString(),
+                email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                role: user.role,
+                avatar: user.avatar,
+            },
+            tokens,
+        };
+    },
+
     // ==================== GENERATE TOKENS ====================
     /**
      * Generate access and refresh tokens

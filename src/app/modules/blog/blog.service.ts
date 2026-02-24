@@ -15,17 +15,25 @@ import { NotificationService } from '../notification/notification.module';
  * Generate URL-friendly slug from title
  */
 const generateSlug = (title: string): string => {
-    if (!title) return `resource-${Date.now()}`;
+    if (!title) return `res-${Math.random().toString(36).substring(2, 7)}`;
 
-    return title
+    // Convert to lowercase and remove non-alphanumeric (English) characters
+    let slug = title
         .toLowerCase()
         .trim()
-        // Replace spaces and special chars with single dash
-        // Allowing Bengali range \u0980-\u09FF
-        .replace(/[^\u0980-\u09FFa-z0-9\s-]/g, '')
+        .replace(/[^a-z0-9\s-]/g, '') // Strictly English alphanumeric
         .replace(/\s+/g, '-')
         .replace(/-+/g, '-')
         .replace(/^-+|-+$/g, '');
+
+    // If title was only non-English (like Bengali), slug will be empty
+    if (!slug || slug.length < 2) {
+        // Use a short random hash for unique identification
+        const hash = Math.random().toString(36).substring(2, 8);
+        return `resource-${hash}`;
+    }
+
+    return slug;
 };
 
 
@@ -256,17 +264,21 @@ const updateBlog = async (
         throw new AppError(403, 'You are not authorized to update this blog');
     }
 
-    // Always ensure a valid slug if title changes or current slug is broken
-    const isSlugBroken = !blog.slug || blog.slug === '-' || /^-+\d*$/.test(blog.slug);
-    if (payload.title || payload.titleBn || isSlugBroken) {
+    // Always ensure a valid slug if title changes or current slug is "ugly" (contains non-ASCII)
+    const isSlugUgly = !blog.slug || blog.slug === '-' || /[^\x00-\x7F]/.test(blog.slug);
+
+    if (payload.title || payload.titleBn || isSlugUgly) {
         const titleForSlug = (payload.title || payload.titleBn || blog.title || blog.titleBn) as string || '';
         let newSlug = generateSlug(titleForSlug);
 
-        const existingBlog = await Blog.findOne({ slug: newSlug, _id: { $ne: id } });
-        if (existingBlog) {
-            newSlug = `${newSlug}-${Date.now().toString().slice(-4)}`;
+        // Only update if the new slug is different to avoid unnecessary uniqueness checks
+        if (newSlug !== blog.slug) {
+            const existingBlog = await Blog.findOne({ slug: newSlug, _id: { $ne: id } });
+            if (existingBlog) {
+                newSlug = `${newSlug}-${Date.now().toString().slice(-4)}`;
+            }
+            payload.slug = newSlug;
         }
-        payload.slug = newSlug;
     }
 
     // Set publishedAt if status is being changed to published

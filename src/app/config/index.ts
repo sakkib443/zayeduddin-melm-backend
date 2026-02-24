@@ -72,4 +72,11 @@ export default {
     password: process.env.BKASH_PASSWORD || 'demo_password',
     base_url: process.env.BKASH_BASE_URL || 'https://tokenized.sandbox.bka.sh/v1.2.0-beta',
   },
+
+  // ==================== Google OAuth Configuration ====================
+  // গুগল পেমেন্ট গেটওয়ে সেটিংস (আসলে লগইন এর জন্য)
+  google: {
+    client_id: process.env.GOOGLE_CLIENT_ID || '',
+    client_secret: process.env.GOOGLE_CLIENT_SECRET || '',
+  },
 };
