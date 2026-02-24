@@ -15,29 +15,34 @@ import { NotificationService } from '../notification/notification.module';
  * Generate URL-friendly slug from title
  */
 const generateSlug = (title: string): string => {
+    if (!title) return `resource-${Date.now()}`;
+
     return title
         .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, '')
+        .trim()
+        // Replace spaces and special chars with single dash
+        // Allowing Bengali range \u0980-\u09FF
+        .replace(/[^\u0980-\u09FFa-z0-9\s-]/g, '')
         .replace(/\s+/g, '-')
         .replace(/-+/g, '-')
-        .trim();
+        .replace(/^-+|-+$/g, '');
 };
+
+
 
 /**
  * Create a new blog
  * নতুন ব্লগ তৈরি করা
  */
 const createBlog = async (payload: Partial<IBlog>, userId: string, userRole: string): Promise<IBlog> => {
-    // Generate slug from title
-    let slug = generateSlug(payload.title || '');
+    // Generate slug from title (Prefer titleEn if exists, else titleBn or title)
+    const titleForSlug = payload.title || payload.titleBn || '';
+    let slug = generateSlug(titleForSlug);
 
-    // Check if slug already exists, if so append a number
+    // Ensure unique slug
     let existingBlog = await Blog.findOne({ slug });
-    let counter = 1;
-    while (existingBlog) {
-        slug = `${generateSlug(payload.title || '')}-${counter}`;
-        existingBlog = await Blog.findOne({ slug });
-        counter++;
+    if (existingBlog) {
+        slug = `${slug}-${Date.now().toString().slice(-4)}`;
     }
 
     const blogData = {
@@ -251,12 +256,15 @@ const updateBlog = async (
         throw new AppError(403, 'You are not authorized to update this blog');
     }
 
-    // If title is being updated, update slug too
-    if (payload.title && payload.title !== blog.title) {
-        let newSlug = generateSlug(payload.title);
+    // Always ensure a valid slug if title changes or current slug is broken
+    const isSlugBroken = !blog.slug || blog.slug === '-' || /^-+\d*$/.test(blog.slug);
+    if (payload.title || payload.titleBn || isSlugBroken) {
+        const titleForSlug = (payload.title || payload.titleBn || blog.title || blog.titleBn) as string || '';
+        let newSlug = generateSlug(titleForSlug);
+
         const existingBlog = await Blog.findOne({ slug: newSlug, _id: { $ne: id } });
         if (existingBlog) {
-            newSlug = `${newSlug}-${Date.now()}`;
+            newSlug = `${newSlug}-${Date.now().toString().slice(-4)}`;
         }
         payload.slug = newSlug;
     }

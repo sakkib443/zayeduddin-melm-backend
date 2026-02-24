@@ -1,0 +1,42 @@
+--- All Blog Slugs ---
+
+1. Title: How to Build a Professional Designer Portfolio
+   TitleBn: কিভাবে একটি প্রফেশনাল ডিজাইনার পোর্টফলিও তৈরি করবেন
+   Slug: how-to-build-a-professional-designer-portfolio
+   URL: /resource-library/how-to-build-a-professional-designer-portfolio
+
+2. Title: Typography Rules for Better Readability
+   TitleBn: ভাল রিডাবিলিটির জন্য টাইপোগ্রাফি রুলস
+   Slug: typography-rules-for-better-readability
+   URL: /resource-library/typography-rules-for-better-readability
+
+3. Title: Mastering Modern Logo Design in 2024
+   TitleBn: ২০২৪ সালে মডার্ন লোগো ডিজাইনে দক্ষতা অর্জন
+   Slug: mastering-modern-logo-design-in-2024
+   URL: /resource-library/mastering-modern-logo-design-in-2024
+
+4. Title: Graphic Design Trends to Watch This Year
+   TitleBn: এই বছরের সেরা গ্রাফিক ডিজাইন ট্রেন্ডস
+   Slug: graphic-design-trends-to-watch-this-year
+   URL: /resource-library/graphic-design-trends-to-watch-this-year
+
+5. Title: The Future of AI in Graphic Design
+   TitleBn: গ্রাফিক ডিজাইনে এআই-এর ভবিষ্যৎ
+   Slug: the-future-of-ai-in-graphic-design
+   URL: /resource-library/the-future-of-ai-in-graphic-design
+
+6. Title: প্রশিক্ষণ শেষ করেও কেন অনেকেই ফ্রিল্যান্সার হতে ব্যর্থ হন?
+   TitleBn: প্রশিক্ষণ শেষ করেও কেন অনেকেই ফ্রিল্যান্সার হতে ব্যর্থ হন?
+   Slug: প্রশিক্ষণ-শেষ-করেও-কেন-অনেকেই-ফ্রিল্যান্সার-হতে-ব্যর্থ-হন
+   URL: /resource-library/প্রশিক্ষণ-শেষ-করেও-কেন-অনেকেই-ফ্রিল্যান্সার-হতে-ব্যর্থ-হন
+
+7. Title: গ্রাফিক ডিজাইন কি? গ্রাফিক ডিজাইনের মূল উপাদানসমূহ।
+   TitleBn: গ্রাফিক ডিজাইন কি? গ্রাফিক ডিজাইনের মূল উপাদানসমূহ।
+   Slug: গ্রাফিক-ডিজাইন-কি-গ্রাফিক-ডিজাইনের-মূল-উপাদানসমূহ
+   URL: /resource-library/গ্রাফিক-ডিজাইন-কি-গ্রাফিক-ডিজাইনের-মূল-উপাদানসমূহ
+
+8. Title: টাইপোগ্রাফি কী?
+   TitleBn: টাইপোগ্রাফি কী?
+   Slug: টাইপোগ্রাফি-কী
+   URL: /resource-library/টাইপোগ্রাফি-কী
+
