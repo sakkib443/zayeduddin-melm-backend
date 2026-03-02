@@ -71,12 +71,17 @@ export interface ICourse {
     // ==================== Module & Lesson References ====================
     modules: Types.ObjectId[];        // Array of Module references
     lessons: Types.ObjectId[];        // Array of Lesson references
+    instructor?: Types.ObjectId;      // Reference to Instructor
 
     // ==================== Content Info ====================
     features: string[];               // What's included
+    featuresBn?: string[];            // What's included (Bengali)
     requirements: string[];           // Prerequisites
+    requirementsBn?: string[];        // Prerequisites (Bengali)
     whatYouWillLearn: string[];       // Learning outcomes
+    whatYouWillLearnBn?: string[];    // Learning outcomes (Bengali)
     targetAudience: string[];         // Who this course is for
+    targetAudienceBn?: string[];      // Who this course is for (Bengali)
 
     // ==================== Status & Visibility ====================
     status: TCourseStatus;            // Draft/Published/Archived

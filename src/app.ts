@@ -44,6 +44,7 @@ import { DesignTemplateRoutes } from './app/modules/designTemplate/designTemplat
 import { BatchRoutes } from './app/modules/batch/batch.routes';
 import { LiveClassRoutes } from './app/modules/liveClass/liveClass.routes';
 import { InstructorRoutes } from './app/modules/instructor/instructor.routes';
+import { LegalPageRoutes } from './app/modules/legalPage/legalPage.module';
 
 
 // ==================== App Initialization ====================
@@ -162,6 +163,9 @@ app.use('/api/wishlist', WishlistRoutes);
 
 // Order routes (authenticated)
 app.use('/api/orders', OrderRoutes);
+
+// Legal pages (public + admin)
+app.use('/api/legal-pages', LegalPageRoutes);
 
 // Review routes (public + authenticated)
 app.use('/api/reviews', ReviewRoutes);

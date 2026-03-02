@@ -203,7 +203,10 @@ export interface IDesign {
     // Contact section content
     contactContent?: IContactContent;
 
-    // About page sections - flexible structure
+    // About page content (all sections)
+    aboutContent?: Record<string, unknown>;
+
+    // About page sections - flexible structure (legacy)
     aboutHeroContent?: Record<string, unknown>;
     aboutMissionContent?: Record<string, unknown>;
     aboutStatsContent?: Record<string, unknown>;

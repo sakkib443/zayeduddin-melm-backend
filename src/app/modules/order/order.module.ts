@@ -309,6 +309,49 @@ const OrderService = {
         if (!updatedOrder) throw new AppError(404, 'Order not found');
         return updatedOrder;
     },
+
+    async deleteOrder(orderId: string): Promise<IOrder> {
+        const order = await Order.findById(orderId);
+        if (!order) throw new AppError(404, 'Order not found');
+
+        // Delete associated enrollments for course items
+        const courseItems = order.items.filter(item => item.productType === 'course');
+        if (courseItems.length > 0) {
+            try {
+                const { Enrollment } = await import('../enrollment/enrollment.model');
+                const { Course } = await import('../course/course.model');
+
+                for (const item of courseItems) {
+                    // Delete enrollment linked to this order and course
+                    const deleted = await Enrollment.findOneAndDelete({
+                        order: order._id,
+                        course: item.product,
+                    });
+
+                    // If no enrollment found by order ref, try by student + course
+                    if (!deleted) {
+                        await Enrollment.findOneAndDelete({
+                            student: order.user,
+                            course: item.product,
+                        });
+                    }
+
+                    // Decrement totalEnrollments on the course
+                    await Course.findByIdAndUpdate(item.product, {
+                        $inc: { totalEnrollments: -1 },
+                    });
+
+                    console.log(`Deleted enrollment for course ${item.product} (order ${orderId})`);
+                }
+            } catch (err) {
+                console.error('Error deleting enrollments:', err);
+            }
+        }
+
+        // Now delete the order itself
+        await Order.findByIdAndDelete(orderId);
+        return order;
+    },
 };
 
 // ==================== CONTROLLER ====================
@@ -364,6 +407,11 @@ const OrderController = {
         const order = await OrderService.submitManualPayment(orderId, userId, req.body);
         sendResponse(res, { statusCode: 200, success: true, message: 'Manual payment submitted successfully', data: order });
     }),
+
+    deleteOrder: catchAsync(async (req: Request, res: Response) => {
+        const order = await OrderService.deleteOrder(req.params.id);
+        sendResponse(res, { statusCode: 200, success: true, message: 'Order deleted successfully', data: order });
+    }),
 };
 
 // ==================== ROUTES ====================
@@ -377,6 +425,7 @@ router.patch('/:id/manual-payment', authMiddleware, OrderController.submitManual
 // Admin
 router.get('/admin/all', authMiddleware, authorizeRoles('admin'), OrderController.getAllOrders);
 router.patch('/admin/:id/status', authMiddleware, authorizeRoles('admin'), OrderController.updateOrderStatus);
+router.delete('/admin/:id', authMiddleware, authorizeRoles('admin'), OrderController.deleteOrder);
 
 export const OrderRoutes = router;
 export default OrderService;

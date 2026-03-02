@@ -33,22 +33,26 @@ export const createInstructorValidation = z.object({
             .max(50, 'Last name cannot exceed 50 characters'),
 
         phone: z
-            .string({ required_error: 'Phone number is required' })
+            .string()
             .min(11, 'Phone number must be at least 11 digits')
-            .max(14, 'Phone number cannot exceed 14 digits'),
+            .max(14, 'Phone number cannot exceed 14 digits')
+            .optional()
+            .default(''),
 
         // Instructor profile fields
         title: z
-            .string({ required_error: 'Title/designation is required' })
-            .min(1, 'Title is required')
-            .max(200, 'Title cannot exceed 200 characters'),
+            .string()
+            .max(200, 'Title cannot exceed 200 characters')
+            .optional()
+            .default(''),
 
         titleBn: z.string().max(200).optional(),
 
         bio: z
-            .string({ required_error: 'Bio is required' })
-            .min(1, 'Bio is required')
-            .max(500, 'Bio cannot exceed 500 characters'),
+            .string()
+            .max(500, 'Bio cannot exceed 500 characters')
+            .optional()
+            .default(''),
 
         bioBn: z.string().optional(),
         longBio: z.string().optional(),

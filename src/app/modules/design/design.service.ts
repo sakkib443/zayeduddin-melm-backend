@@ -99,6 +99,68 @@ const getDesignBySection = async (section: string): Promise<IDesign | null> => {
     }
 
     // If popularCourse section doesn't exist, create default
+    // If about section doesn't exist, create default
+    if (!design && section === 'about') {
+        design = await Design.create({
+            section: 'about',
+            aboutContent: {
+                hero: {
+                    badge: 'Our Story',
+                    badgeBn: 'আমাদের সম্পর্কে',
+                    title: 'Building Skills, Shaping Futures',
+                    titleBn: 'দক্ষতা বুনন, ভবিষ্যৎ গঠন',
+                    description: 'We turn potential into professional success. Our mission is to empower the youth of Bangladesh with world-class digital skills.',
+                    descriptionBn: 'আমরা সম্ভাবনাকে পেশাদার সাফল্যে রূপান্তর করি।',
+                    buttonText: 'Explore Courses',
+                    buttonTextBn: 'কোর্সগুলো দেখুন',
+                    happyStudents: '50k+ Happy Students',
+                    happyStudentsBn: '৫০ হাজার+ সন্তুষ্ট শিক্ষার্থী'
+                },
+                stats: [
+                    { number: '50k+', label: 'Active Learners', labelBn: 'সক্রিয় শিক্ষার্থী' },
+                    { number: '120+', label: 'Expert Mentors', labelBn: 'বিশেষজ্ঞ মেন্টর' },
+                    { number: '500+', label: 'Premium Courses', labelBn: 'প্রিমিয়াম কোর্স' },
+                    { number: '4.9', label: 'Top Rated', labelBn: 'শীর্ষ রেটিং' }
+                ],
+                mission: {
+                    title: 'Our Mission',
+                    titleBn: 'আমাদের মিশন',
+                    description: 'We teach more than just code. We foster a community of innovators.',
+                    descriptionBn: 'আমরা কোডিংয়ের চেয়ে বেশি কিছু শেখাই।',
+                    quote: '"Education is not the learning of facts, but the training of the mind to think."',
+                    quoteBn: '"শিক্ষা তথ্য মুখস্থ করা নয়, বরং মনকে চিন্তা করতে শেখানো।"',
+                    quoteLabel: 'Our Philosophy',
+                    quoteLabelBn: 'আমাদের দর্শন',
+                    features: [
+                        { title: 'Our Target', titleBn: 'আমাদের লক্ষ্য', desc: 'Digital Literacy for all.', descBn: 'সবার জন্য ডিজিটাল সাক্ষরতা।' },
+                        { title: 'Global Standard', titleBn: 'বিশ্বমান', desc: 'Industry-vetted curriculum.', descBn: 'ইন্ডাস্ট্রি-অনুমোদিত কারিকুলাম।' }
+                    ]
+                },
+                whyUs: {
+                    title: 'Why Choose Us?',
+                    titleBn: 'কেন আমরা সেরা?',
+                    features: [
+                        { title: 'Student Focused', titleBn: 'শিক্ষার্থী কেন্দ্রিক', desc: 'Every curriculum is designed for students.', descBn: 'প্রতিটি কারিকুলাম শিক্ষার্থীদের জন্য ডিজাইন করা।' },
+                        { title: 'Expert Mentors', titleBn: 'বিশেষজ্ঞ মেন্টর', desc: 'Learn from industry veterans.', descBn: 'ইন্ডাস্ট্রির অভিজ্ঞদের কাছ থেকে শিখুন।' },
+                        { title: 'Certifications', titleBn: 'সার্টিফিকেশন', desc: 'Earn recognized certificates.', descBn: 'স্বীকৃত সার্টিফিকেট অর্জন করুন।' }
+                    ]
+                },
+                cta: {
+                    title: 'Begin Your Legacy',
+                    titleBn: 'আপনার যাত্রা শুরু করুন',
+                    description: 'Join over 50,000 students worldwide.',
+                    descriptionBn: 'বিশ্বব্যাপী ৫০ হাজারেরও বেশি শিক্ষার্থীর সাথে যোগ দিন।',
+                    button1Text: 'Get Started Now',
+                    button1TextBn: 'কোর্সগুলো দেখুন',
+                    button2Text: 'Contact Support',
+                    button2TextBn: 'যোগাযোগ করুন'
+                }
+            },
+            isActive: true
+        });
+    }
+
+
     if (!design && section === 'popularCourse') {
         design = await Design.create({
             section: 'popularCourse',

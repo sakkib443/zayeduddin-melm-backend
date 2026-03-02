@@ -173,7 +173,16 @@ const sendClassNotification = async (
 ): Promise<void> => {
     try {
         // Get all students enrolled in the batch
-        const enrollments = await Enrollment.find({ batch: liveClass.batch }).select('student');
+        let enrollments = await Enrollment.find({ batch: liveClass.batch }).select('student');
+
+        // Fallback: if no enrollments found by batch, try finding by course
+        if (enrollments.length === 0) {
+            const batch = await Batch.findById(liveClass.batch).select('course');
+            if (batch?.course) {
+                enrollments = await Enrollment.find({ course: batch.course }).select('student');
+            }
+        }
+
         const studentIds = enrollments.map((e) => e.student);
 
         if (studentIds.length === 0) return;
@@ -208,6 +217,9 @@ const sendClassNotification = async (
                 break;
         }
 
+        // Include meeting link for actionable notifications
+        const includeMeetingLink = ['scheduled', 'live', 'reminder', 'rescheduled'].includes(type);
+
         // Create notifications for all students
         const notifications = studentIds.map((studentId) => ({
             user: studentId,
@@ -217,7 +229,7 @@ const sendClassNotification = async (
             data: {
                 liveClassId: liveClass._id,
                 batchId: liveClass.batch,
-                meetingLink: type === 'live' ? liveClass.meetingLink : undefined,
+                meetingLink: includeMeetingLink ? liveClass.meetingLink : undefined,
             },
         }));
 

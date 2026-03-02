@@ -148,6 +148,10 @@ const getAllCourses = async (
     // Execute query
     const courses = await Course.find(whereCondition)
         .populate('category', 'name nameEn icon')
+        .populate({
+            path: 'instructor',
+            populate: { path: 'userId', select: 'firstName lastName email avatar' }
+        })
         .sort(sortConfig)
         .skip(skip)
         .limit(limit)
@@ -174,6 +178,10 @@ const getAllCourses = async (
 const getCourseById = async (id: string): Promise<ICourse | any | null> => {
     const course = await Course.findById(id)
         .populate('category', 'name nameEn icon')
+        .populate({
+            path: 'instructor',
+            populate: { path: 'userId', select: 'firstName lastName email avatar' }
+        })
         .lean();
 
     if (!course) {
@@ -200,6 +208,10 @@ const getCourseById = async (id: string): Promise<ICourse | any | null> => {
 const getCourseBySlug = async (slug: string): Promise<ICourse | any | null> => {
     const course = await Course.findOne({ slug, status: 'published' })
         .populate('category', 'name nameEn icon')
+        .populate({
+            path: 'instructor',
+            populate: { path: 'userId', select: 'firstName lastName email avatar' }
+        })
         .lean();
 
     if (!course) {

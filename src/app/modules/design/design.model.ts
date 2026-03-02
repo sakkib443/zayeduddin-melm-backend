@@ -189,7 +189,9 @@ const designSchema = new Schema<IDesign, DesignModel>(
         digitalProductsContent: digitalProductsContentSchema,
         whatWeProvideContent: whatWeProvideContentSchema,
         contactContent: contactContentSchema,
-        // About page sections - flexible Schema.Types.Mixed
+        // About page - single flexible field
+        aboutContent: { type: Schema.Types.Mixed },
+        // About page sections - flexible Schema.Types.Mixed (legacy)
         aboutHeroContent: { type: Schema.Types.Mixed },
         aboutMissionContent: { type: Schema.Types.Mixed },
         aboutStatsContent: { type: Schema.Types.Mixed },

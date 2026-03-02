@@ -22,9 +22,9 @@ const instructorSchema = new Schema<IInstructor, InstructorModel>(
         // ==================== Basic Info ====================
         title: {
             type: String,
-            required: [true, 'Title/designation is required'],
             trim: true,
             maxlength: [200, 'Title cannot exceed 200 characters'],
+            default: '',
         },
         titleBn: {
             type: String,
@@ -33,8 +33,8 @@ const instructorSchema = new Schema<IInstructor, InstructorModel>(
         },
         bio: {
             type: String,
-            required: [true, 'Bio is required'],
             maxlength: [500, 'Bio cannot exceed 500 characters'],
+            default: '',
         },
         bioBn: {
             type: String,

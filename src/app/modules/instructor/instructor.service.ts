@@ -26,7 +26,7 @@ const createInstructor = async (payload: TCreateInstructorInput) => {
         password: payload.password,
         firstName: payload.firstName,
         lastName: payload.lastName,
-        phone: payload.phone,
+        phone: payload.phone || '',
         avatar: payload.avatar || '',
         role: 'instructor' as const,
         status: 'active' as const,

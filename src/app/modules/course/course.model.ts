@@ -150,9 +150,19 @@ const courseSchema = new Schema<ICourse, CourseModel>(
             ref: 'Lesson',
         }],
 
+        // ==================== Instructor Reference ====================
+        instructor: {
+            type: Schema.Types.ObjectId,
+            ref: 'Instructor',
+        },
+
 
         // ==================== Content Info ====================
         features: {
+            type: [String],
+            default: [],
+        },
+        featuresBn: {
             type: [String],
             default: [],
         },
@@ -160,11 +170,23 @@ const courseSchema = new Schema<ICourse, CourseModel>(
             type: [String],
             default: [],
         },
+        requirementsBn: {
+            type: [String],
+            default: [],
+        },
         whatYouWillLearn: {
             type: [String],
             default: [],
         },
+        whatYouWillLearnBn: {
+            type: [String],
+            default: [],
+        },
         targetAudience: {
+            type: [String],
+            default: [],
+        },
+        targetAudienceBn: {
             type: [String],
             default: [],
         },
