@@ -54,6 +54,7 @@ const createInstructor = async (payload: TCreateInstructorInput) => {
         certifications: payload.certifications || [],
         whatsAppNumber: payload.whatsAppNumber || '',
         socialLinks: payload.socialLinks || {},
+        totalStudents: (payload as any).totalStudents || 0,
         isPublished: payload.isPublished !== undefined ? payload.isPublished : true,
         order: payload.order || 0,
     };

@@ -34,8 +34,6 @@ export const createInstructorValidation = z.object({
 
         phone: z
             .string()
-            .min(11, 'Phone number must be at least 11 digits')
-            .max(14, 'Phone number cannot exceed 14 digits')
             .optional()
             .default(''),
 
@@ -82,6 +80,7 @@ export const createInstructorValidation = z.object({
 
         isPublished: z.boolean().optional().default(true),
         order: z.number().optional().default(0),
+        totalStudents: z.number().min(0).optional().default(0),
     }),
 });
 
