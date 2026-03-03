@@ -193,17 +193,13 @@ const UserService = {
     return user;
   },
 
-  // ==================== DELETE USER (SOFT DELETE) ====================
+  // ==================== DELETE USER (HARD DELETE) ====================
   /**
-   * Soft delete user
-   * User কে permanently delete না করে isDeleted = true করা
+   * Permanently delete user
+   * User কে database থেকে চিরতরে মুছে ফেলা
    */
   async deleteUser(userId: string): Promise<IUser> {
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { isDeleted: true, status: 'blocked' },
-      { new: true }
-    );
+    const user = await User.findByIdAndDelete(userId);
 
     if (!user) {
       throw new AppError(404, 'User not found');
