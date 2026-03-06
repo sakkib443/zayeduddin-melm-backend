@@ -43,6 +43,11 @@ export interface IHeroContent {
         avgRating: number;
         totalProducts: number;
     };
+    backgroundImage?: string;
+    backgroundOverlayColor?: string;
+    backgroundOverlayOpacity?: number;
+    backgroundBlur?: number;
+    backgroundGrayscale?: boolean;
 }
 
 /**

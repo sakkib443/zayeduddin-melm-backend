@@ -50,7 +50,12 @@ const heroContentSchema = new Schema({
         downloads: { type: Number, default: 12000 },
         avgRating: { type: Number, default: 4.8 },
         totalProducts: { type: Number, default: 500 }
-    }
+    },
+    backgroundImage: { type: String, default: '' },
+    backgroundOverlayColor: { type: String, default: '#021E14' },
+    backgroundOverlayOpacity: { type: Number, default: 0.12 },
+    backgroundBlur: { type: Number, default: 0.5 },
+    backgroundGrayscale: { type: Boolean, default: true }
 }, { _id: false });
 
 // Popular Course Section Schema
