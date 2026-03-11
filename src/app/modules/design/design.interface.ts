@@ -48,6 +48,19 @@ export interface IHeroContent {
     backgroundOverlayOpacity?: number;
     backgroundBlur?: number;
     backgroundGrayscale?: boolean;
+    textColors?: {
+        heading: string;
+        subtitle: string;
+        bio: string;
+        seeMore: string;
+    };
+    textShadow?: {
+        enabled: boolean;
+        color: string;
+        blur: number;
+        offsetX: number;
+        offsetY: number;
+    };
 }
 
 /**

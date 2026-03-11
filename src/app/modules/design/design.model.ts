@@ -55,7 +55,20 @@ const heroContentSchema = new Schema({
     backgroundOverlayColor: { type: String, default: '#021E14' },
     backgroundOverlayOpacity: { type: Number, default: 0.12 },
     backgroundBlur: { type: Number, default: 0.5 },
-    backgroundGrayscale: { type: Boolean, default: true }
+    backgroundGrayscale: { type: Boolean, default: true },
+    textColors: {
+        heading: { type: String, default: '#021E14' },
+        subtitle: { type: String, default: '#021E14' },
+        bio: { type: String, default: '#021E14' },
+        seeMore: { type: String, default: '#D4AF37' }
+    },
+    textShadow: {
+        enabled: { type: Boolean, default: false },
+        color: { type: String, default: 'rgba(0,0,0,0.3)' },
+        blur: { type: Number, default: 4 },
+        offsetX: { type: Number, default: 0 },
+        offsetY: { type: Number, default: 2 }
+    }
 }, { _id: false });
 
 // Popular Course Section Schema
