@@ -61,6 +61,12 @@ export interface IHeroContent {
         offsetX: number;
         offsetY: number;
     };
+    cardStyle?: {
+        bgColor: string;
+        bgOpacity: number;
+        titleColor: string;
+        descColor: string;
+    };
 }
 
 /**

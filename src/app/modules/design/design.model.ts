@@ -68,6 +68,12 @@ const heroContentSchema = new Schema({
         blur: { type: Number, default: 4 },
         offsetX: { type: Number, default: 0 },
         offsetY: { type: Number, default: 2 }
+    },
+    cardStyle: {
+        bgColor: { type: String, default: '#021E14' },
+        bgOpacity: { type: Number, default: 1 },
+        titleColor: { type: String, default: '#D4AF37' },
+        descColor: { type: String, default: '#FFFFFF' }
     }
 }, { _id: false });
 
