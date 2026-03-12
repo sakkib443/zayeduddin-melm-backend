@@ -63,8 +63,8 @@ const AuthController = {
    * গুগল দিয়ে login করা
    */
   googleLogin: catchAsync(async (req: Request, res: Response) => {
-    const { idToken } = req.body;
-    const result = await AuthService.googleLogin(idToken);
+    const { idToken, accessToken } = req.body;
+    const result = await AuthService.googleLogin(idToken, accessToken);
 
     // Set refresh token in HTTP-only cookie
     res.cookie('refreshToken', result.tokens.refreshToken, {

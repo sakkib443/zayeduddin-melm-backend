@@ -24,24 +24,54 @@ const AuthService = {
     /**
      * Google Login
      * Google token verify করে login অথবা registration করা
+     * Supports both idToken (from GoogleLogin component) and accessToken (from useGoogleLogin hook)
      */
-    async googleLogin(idToken: string): Promise<IAuthResponse> {
-        let ticket;
-        try {
-            ticket = await client.verifyIdToken({
-                idToken,
-                audience: config.google.client_id,
-            });
-        } catch (error) {
-            throw new AppError(401, 'Invalid Google token');
+    async googleLogin(idToken?: string, accessToken?: string): Promise<IAuthResponse> {
+        let email: string | undefined;
+        let given_name: string | undefined;
+        let family_name: string | undefined;
+        let picture: string | undefined;
+
+        if (idToken) {
+            // ID Token flow (from GoogleLogin component)
+            let ticket;
+            try {
+                ticket = await client.verifyIdToken({
+                    idToken,
+                    audience: config.google.client_id,
+                });
+            } catch (error) {
+                throw new AppError(401, 'Invalid Google token');
+            }
+
+            const payload = ticket.getPayload();
+            if (!payload || !payload.email) {
+                throw new AppError(401, 'Invalid Google token payload');
+            }
+
+            ({ email, given_name, family_name, picture } = payload);
+        } else if (accessToken) {
+            // Access Token flow (from useGoogleLogin hook)
+            try {
+                const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                    headers: { Authorization: `Bearer ${accessToken}` },
+                });
+                if (!response.ok) throw new Error('Failed to fetch user info');
+                const userInfo = await response.json();
+                email = userInfo.email;
+                given_name = userInfo.given_name;
+                family_name = userInfo.family_name;
+                picture = userInfo.picture;
+            } catch (error) {
+                throw new AppError(401, 'Invalid Google access token');
+            }
+        } else {
+            throw new AppError(400, 'Google token is required');
         }
 
-        const payload = ticket.getPayload();
-        if (!payload || !payload.email) {
-            throw new AppError(401, 'Invalid Google token payload');
+        if (!email) {
+            throw new AppError(401, 'Could not retrieve email from Google');
         }
-
-        const { email, given_name, family_name, picture } = payload;
 
         // Find user by email
         let user = await User.findOne({ email, isDeleted: false });
