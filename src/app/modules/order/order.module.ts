@@ -238,6 +238,29 @@ const OrderService = {
         // If payment is completed, handle delivery (downloads or enrollments)
         if (paymentStatus === 'completed') {
             await deliverOrderItems(order, items);
+        } else {
+            // Send pending order email for non-completed orders
+            try {
+                const user = await User.findById(userId);
+                if (user) {
+                    EmailService.sendOrderPendingEmail(user.email, {
+                        firstName: user.firstName,
+                        email: user.email,
+                        orderId: order._id!.toString(),
+                        items: items.map((item: any) => ({
+                            title: item.title,
+                            price: item.price,
+                            productType: item.productType
+                        })),
+                        totalAmount: order.totalAmount,
+                        paymentMethod: order.paymentMethod,
+                        transactionId: order.transactionId,
+                        orderDate: order.orderDate,
+                    }).catch(err => console.error('Pending order email error:', err));
+                }
+            } catch (error) {
+                console.error('Failed to send pending order email:', error);
+            }
         }
 
         return order;
