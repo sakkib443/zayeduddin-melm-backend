@@ -72,10 +72,17 @@ export const updateUserValidation = z.object({
 
     phone: z
       .string()
-      .min(11, 'Phone number must be at least 11 digits')
       .max(14, 'Phone number cannot exceed 14 digits')
-      .regex(/^(\+880|880|0)?1[3-9]\d{8}$/, 'Please provide a valid Bangladeshi phone number')
       .optional(),
+
+    phoneNumber: z
+      .string()
+      .max(14, 'Phone number cannot exceed 14 digits')
+      .optional(),
+
+    address: z.string().max(500, 'Address cannot exceed 500 characters').optional(),
+
+    dateOfBirth: z.string().optional(),
 
     avatar: z.string().url('Avatar must be a valid URL').optional(),
   }),

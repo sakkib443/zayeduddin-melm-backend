@@ -279,6 +279,58 @@ const ReviewService = {
         if (!review) throw new AppError(404, 'Review not found');
         return review;
     },
+
+    async getFeaturedReviews(limit = 10): Promise<any[]> {
+        const reviews = await Review.find({ status: 'approved' })
+            .populate('user', 'firstName lastName avatar')
+            .sort({ rating: -1, createdAt: -1 })
+            .limit(limit)
+            .lean();
+
+        const enrichedReviews = await Promise.all(reviews.map(async (review: any) => {
+            let productDetails: any = null;
+            try {
+                if (review.productType === 'website') {
+                    const { Website } = await import('../website/website.model');
+                    productDetails = await Website.findById(review.product).select('title slug thumbnail');
+                } else if (review.productType === 'design-template') {
+                    const { DesignTemplate } = await import('../designTemplate/designTemplate.model');
+                    productDetails = await DesignTemplate.findById(review.product).select('title slug thumbnail');
+                } else if (review.productType === 'course') {
+                    const { Course } = await import('../course/course.model');
+                    productDetails = await Course.findById(review.product).select('title slug thumbnail');
+                }
+            } catch (err) {
+                console.error(`Failed to fetch product for featured review ${review._id}`, err);
+            }
+            return { ...review, productDetails };
+        }));
+
+        return enrichedReviews;
+    },
+
+    async adminDeleteReview(reviewId: string): Promise<void> {
+        const review = await Review.findById(reviewId);
+        if (!review) throw new AppError(404, 'Review not found');
+        await Review.findByIdAndDelete(reviewId);
+        if (review.status === 'approved') {
+            await this.syncProductStats(review.product.toString(), review.productType);
+        }
+    },
+
+    async adminUpdateReview(reviewId: string, data: { title?: string, comment?: string, rating?: number, status?: string }): Promise<IReview> {
+        const review = await Review.findById(reviewId);
+        if (!review) throw new AppError(404, 'Review not found');
+
+        if (data.title !== undefined) review.title = data.title;
+        if (data.comment !== undefined) review.comment = data.comment;
+        if (data.rating !== undefined) review.rating = data.rating;
+        if (data.status !== undefined) review.status = data.status as any;
+
+        await review.save();
+        await this.syncProductStats(review.product.toString(), review.productType);
+        return review;
+    },
 };
 
 // ==================== CONTROLLER ====================
@@ -347,12 +399,29 @@ const ReviewController = {
         const review = await ReviewService.updateReviewStatus(req.params.id, req.body.status);
         sendResponse(res, { statusCode: 200, success: true, message: 'Status updated', data: review });
     }),
+
+    getFeaturedReviews: catchAsync(async (req: Request, res: Response) => {
+        const limit = Number(req.query.limit) || 10;
+        const reviews = await ReviewService.getFeaturedReviews(limit);
+        sendResponse(res, { statusCode: 200, success: true, message: 'Featured reviews', data: reviews });
+    }),
+
+    adminDeleteReview: catchAsync(async (req: Request, res: Response) => {
+        await ReviewService.adminDeleteReview(req.params.id);
+        sendResponse(res, { statusCode: 200, success: true, message: 'Review deleted by admin' });
+    }),
+
+    adminUpdateReview: catchAsync(async (req: Request, res: Response) => {
+        const review = await ReviewService.adminUpdateReview(req.params.id, req.body);
+        sendResponse(res, { statusCode: 200, success: true, message: 'Review updated by admin', data: review });
+    }),
 };
 
 // ==================== ROUTES ====================
 const router = express.Router();
 
 // Public
+router.get('/featured', ReviewController.getFeaturedReviews);
 router.get('/product/:productId', ReviewController.getProductReviews);
 router.post('/:id/helpful', ReviewController.markHelpful);
 
@@ -365,6 +434,8 @@ router.delete('/:id', authMiddleware, ReviewController.deleteReview);
 // Admin
 router.get('/admin/all', authMiddleware, authorizeRoles('admin'), ReviewController.getAllReviews);
 router.patch('/admin/:id/status', authMiddleware, authorizeRoles('admin'), ReviewController.updateStatus);
+router.delete('/admin/:id', authMiddleware, authorizeRoles('admin'), ReviewController.adminDeleteReview);
+router.patch('/admin/:id/update', authMiddleware, authorizeRoles('admin'), ReviewController.adminUpdateReview);
 
 export const ReviewRoutes = router;
 export default ReviewService;
