@@ -277,16 +277,19 @@ const getMyUpcomingClasses = async (studentId: string) => {
 
     if (batchIds.length === 0) return [];
 
-    // Get upcoming classes for those batches
-    const now = new Date();
+    // Get today's start to include all of today's classes
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Get upcoming and today's classes for those batches
     const classes = await LiveClass.find({
         batch: { $in: batchIds },
-        classDate: { $gte: now },
+        classDate: { $gte: today },
         status: { $in: ['scheduled', 'live'] },
     })
         .populate({
             path: 'batch',
-            select: 'batchName batchCode course',
+            select: 'batchName batchCode course meetingLink',
             populate: { path: 'course', select: 'title thumbnail' },
         })
         .populate('instructor', 'name avatar')

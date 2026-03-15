@@ -147,16 +147,22 @@ const updateBatch = async (id: string, payload: Partial<IBatch>): Promise<IBatch
 
 // ==================== Delete Batch ====================
 const deleteBatch = async (id: string): Promise<IBatch> => {
-    // Check if batch has enrolled students
-    const enrollmentCount = await Enrollment.countDocuments({ batch: id });
-    if (enrollmentCount > 0) {
-        throw new AppError(400, `Cannot delete batch with ${enrollmentCount} enrolled students`);
-    }
-
-    const batch = await Batch.findByIdAndDelete(id);
+    const batch = await Batch.findById(id);
     if (!batch) {
         throw new AppError(404, 'Batch not found');
     }
+
+    // Clear batch reference from all enrollments associated with this batch
+    // Students remain enrolled in the course but their batch becomes null
+    // Admin can later re-assign them to another batch
+    await Enrollment.updateMany(
+        { batch: id },
+        { $unset: { batch: '' } }
+    );
+
+    // Delete the batch
+    await Batch.findByIdAndDelete(id);
+    
     return batch;
 };
 
